@@ -1,4 +1,4 @@
-project "game.system_a"
+project "game.system_b"
 
     kind "SharedLib"
     language "C++"
@@ -11,14 +11,12 @@ project "game.system_a"
 
     includedirs {
         "include",
-        "../../river/include"
+        "../../river/include",
+        "../system_a/include"
     }
 
     links "river"
-
-    defines {
-        "GAME_SYSTEM_A_API_IMPLMENTATION"
-    }
+    links "game.system_a"
 
     filter "configurations:Debug"
         defines { "DEBUG" }
