@@ -11,6 +11,7 @@ project "game.engine"
 
     includedirs {
         "include",
+        "../system_a/include",
         "../../river/include"
     }
 

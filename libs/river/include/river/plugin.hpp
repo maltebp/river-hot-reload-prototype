@@ -1,7 +1,15 @@
 #pragma once
 
+#include <string>
+
+
 namespace rv {
 
-    using start_plugin = void (__stdcall *)();
+    class Plugin {
+    public:
+
+    public:
+
+    };
 
 }
