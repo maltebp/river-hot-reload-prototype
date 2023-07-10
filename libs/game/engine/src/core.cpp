@@ -16,7 +16,24 @@ namespace game::engine::core {
         rv::PluginManager plugin_manager = { };
 
         game::plugin_a::IPluginA* plugin_a = plugin_manager.register_and_load_plugin<game::plugin_a::IPluginA>();
-        plugin_a->hello();
+        
+        while( true ) {
+            std::cout << std::endl << "> ";
+
+            std::string input;
+            std::getline(std::cin, input);
+
+            if( input == "hello" ) {
+                plugin_a->hello();
+            }
+            else if( input == "quit" ) {
+                std::cout << "Quitting.." << std::endl;
+                break;
+            }
+            else {
+                std::cout << "Error: unknown command '" << input << "'" << std::endl;
+            }
+        }
         
     }
 
