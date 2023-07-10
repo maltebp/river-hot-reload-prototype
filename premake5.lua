@@ -7,5 +7,5 @@ workspace "river_hot_reload_prototype"
 include("libs/river")
 include("libs/game/application")
 include("libs/game/engine")
-include("libs/game/system_a")
-include("libs/game/system_b")
+include("libs/game/plugin_a")
+include("libs/game/plugin_b")

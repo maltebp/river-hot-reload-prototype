@@ -1,7 +1,7 @@
 #include <river/hello.hpp>
-#include <game/system_a/i_plugin_a.hpp>
+#include <game/plugin_a/i_plugin_a.hpp>
 
-using namespace game::system_a;
+using namespace game::plugin_a;
 
 
 class PluginA : public IPluginA {
