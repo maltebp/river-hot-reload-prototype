@@ -15,7 +15,8 @@ namespace game::engine::core {
     void run() {
         rv::PluginManager plugin_manager = { };
 
-        game::plugin_a::IPluginA* plugin_a = plugin_manager.register_and_load_plugin<game::plugin_a::IPluginA>();
+        game::plugin_a::IPluginA* plugin_a =
+            plugin_manager.register_and_load_plugin<game::plugin_a::IPluginA>();
         
         while( true ) {
             std::cout << std::endl << "> ";
@@ -25,6 +26,9 @@ namespace game::engine::core {
 
             if( input == "hello" ) {
                 plugin_a->hello();
+            }
+            else if( input == "reload" ) {
+                plugin_a = plugin_manager.reload_plugin<game::plugin_a::IPluginA>();
             }
             else if( input == "quit" ) {
                 std::cout << "Quitting.." << std::endl;

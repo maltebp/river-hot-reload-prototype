@@ -23,6 +23,7 @@ project "game.plugin_a"
     filter "configurations:Debug"
         defines { "DEBUG" }
         symbols "On"
+        debugformat "c7"
 
     filter "configurations:Release"
         defines { "NDEBUG" }

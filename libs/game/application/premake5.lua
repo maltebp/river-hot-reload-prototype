@@ -18,11 +18,12 @@ project "game.application"
     links "river"
     links "game.engine"
 
-    filter "configurations:Debug"
+    filter "configurations:debug"
         defines { "DEBUG" }
         symbols "On"
+        debugdir "%{prj.location}/bin/x64/debug/"
 
-    filter "configurations:Release"
+    filter "configurations:release"
         defines { "NDEBUG" }
         optimize "On"
 
