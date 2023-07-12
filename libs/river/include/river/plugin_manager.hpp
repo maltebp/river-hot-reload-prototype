@@ -74,17 +74,22 @@ namespace rv {
             
             std::filesystem::path moved_dll_path = hotload_directory / plugin_info->dll_name;
             std::filesystem::path moved_pdb_path = hotload_directory / pdb_name;
+            
+            if( std::filesystem::exists(plugin_info->dll_name) ) {
+                
+                if( std::filesystem::exists(moved_dll_path) ) {
+                    std::filesystem::remove(moved_dll_path);
+                }
 
-            if( std::filesystem::exists(moved_dll_path) ) {
-                std::filesystem::remove(moved_dll_path);
+                if( std::filesystem::exists(moved_pdb_path) ) {
+                    std::filesystem::remove(moved_pdb_path);
+                }
+                std::filesystem::rename(plugin_info->dll_name, moved_dll_path);
             }
 
             if( std::filesystem::exists(moved_pdb_path) ) {
-                std::filesystem::remove(moved_pdb_path);
+                std::filesystem::rename(pdb_name, moved_pdb_path);
             }
-
-            std::filesystem::rename(plugin_info->dll_name, moved_dll_path);
-            std::filesystem::rename(pdb_name, moved_pdb_path);
 
             HINSTANCE dll_handle = LoadLibraryA(moved_dll_path.string().c_str());
             if( dll_handle == nullptr ) {
