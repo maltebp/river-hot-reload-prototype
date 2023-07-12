@@ -25,10 +25,10 @@ namespace game::engine::core {
             std::getline(std::cin, input);
 
             if( input == "hello" ) {
-                plugin_a->hello();
+                plugin_manager.get_plugin<game::plugin_a::IPluginA>()->hello();
             }
             else if( input == "reload" ) {
-                plugin_a = plugin_manager.reload_plugin<game::plugin_a::IPluginA>();
+                plugin_manager.reload_changed_plugins();
             }
             else if( input == "quit" ) {
                 std::cout << "Quitting.." << std::endl;
