@@ -12,6 +12,7 @@ project "game.engine"
     includedirs {
         "include",
         "../plugin_a/include",
+        "../plugin_b/include",
         "../../river/include"
     }
 

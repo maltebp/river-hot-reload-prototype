@@ -2,15 +2,31 @@
 
 #include <river/hello.hpp>
 
-#include <game/plugin_a/class_a.hpp>
+#include <game/plugin_b/i_plugin.hpp>
+
+using namespace game::plugin_b;
 
 
-extern "C" __declspec(dllexport) void start_plugin() {
-    rv::hello("System B");
+class Plugin : public IPlugin {
+public:
 
-    game::plugin_a::ClassA c = { };
+    virtual void hello() override {
+        rv::hello("Plugin B 2");        
+    }
+    
+};
 
-    c.i++;
+Plugin* plugin = nullptr;
 
-    c.print_i();
+
+extern "C" __declspec(dllexport) IPlugin* plugin_start() {
+    plugin = new Plugin();
+    std::cout << "  Plugin B: starting" << std::endl;
+    return plugin;
+}
+
+
+extern "C" __declspec(dllexport) void plugin_stop() {
+    std::cout << "  Plugin B: stopping" << std::endl;
+    delete plugin;
 }

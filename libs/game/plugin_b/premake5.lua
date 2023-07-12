@@ -16,7 +16,6 @@ project "game.plugin_b"
     }
 
     links "river"
-    links "game.plugin_a"
 
     filter "configurations:Debug"
         defines { "DEBUG" }
