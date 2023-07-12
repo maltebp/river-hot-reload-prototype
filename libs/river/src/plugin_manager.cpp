@@ -7,7 +7,10 @@
 
 #include <windows.h>
 
+#include <river/plugin.hpp>
+
 using namespace rv;
+
 
 typedef HINSTANCE DllHandle;
 
@@ -22,7 +25,7 @@ public:
 
     DllHandle dll_handle;
 
-    void* plugin = nullptr;
+    Plugin* plugin = nullptr;
 
     bool loaded = false;
     
@@ -44,7 +47,7 @@ void PluginManager::reload_changed_plugins() {
 }
 
 
-void* PluginManager::register_and_load_plugin(const std::string& dll_name) {
+Plugin* PluginManager::register_and_load_plugin(const std::string& dll_name) {
     assert(this->get_plugin_info(dll_name) == nullptr);
             
     PluginInfo* plugin_info = new PluginInfo(dll_name);
@@ -54,7 +57,7 @@ void* PluginManager::register_and_load_plugin(const std::string& dll_name) {
 }
 
 
-void* PluginManager::get_plugin(const std::string& dll_name) {
+Plugin* PluginManager::get_plugin(const std::string& dll_name) {
     PluginInfo* plugin_info = this->get_plugin_info(dll_name);
     assert(plugin_info != nullptr);
     assert(plugin_info->loaded);
@@ -69,8 +72,8 @@ PluginManager::PluginInfo* PluginManager::get_plugin_info(const std::string& dll
 }
 
 
-void* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
-    using plugin_start_function = void* (*)();
+Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
+    using plugin_start_function = Plugin* (*)();
 
     if( plugin_info->loaded ) return plugin_info->plugin;
 
@@ -117,12 +120,14 @@ void* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
         assert(false);
     }
 
-    void* plugin = start_plugin_func();     
+    Plugin* plugin = (Plugin*)start_plugin_func();     
     assert(plugin != nullptr);
 
     plugin_info->dll_handle = dll_handle;
     plugin_info->loaded = true;
     plugin_info->plugin = plugin;
+
+    plugin->plugin_manager = this;
 
     std::cout << "  Loaded '" << plugin_info->dll_name << "'" << std::endl;
 
@@ -146,4 +151,11 @@ void* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
     plugin_info->dll_handle = { };
 
     std::cout << "  Plugin unloaded" << std::endl;
+}
+
+
+int32_t PluginManager::generate_system_id() {
+    int32_t id = this->next_system_id;
+    this->next_system_id++;
+    return id;
 }

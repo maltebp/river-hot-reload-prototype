@@ -8,6 +8,9 @@
 
 namespace rv {
 
+    class Plugin;
+
+
     class PluginManager {
     public:
 
@@ -23,25 +26,29 @@ namespace rv {
 
         RV_API void reload_changed_plugins();
 
+        int32_t generate_system_id();
+
     private:
 
         class PluginInfo;
 
     private:
 
-        RV_API void* register_and_load_plugin(const std::string& dll_name);
+        RV_API Plugin* register_and_load_plugin(const std::string& dll_name);
 
-        RV_API void* get_plugin(const std::string& dll_name);        
+        RV_API Plugin* get_plugin(const std::string& dll_name);        
 
         PluginInfo* get_plugin_info(const std::string& dll_name);
 
-        void* load_plugin(PluginInfo* plugin_info);
+        Plugin* load_plugin(PluginInfo* plugin_info);
 
         void unload_plugin(PluginInfo* plugin_info);
 
     private:
 
         std::unordered_map<std::string, PluginInfo*> plugin_infos;
+
+        int32_t next_system_id = 1;
 
     };
 

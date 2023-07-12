@@ -4,7 +4,7 @@
 
 
 
-I want to do a prototype of *most* of hot-reloading for most of the game system. It should work like following:
+I want to do a prototype of *most* of hot-reloading for most of the game components. It should work like following:
 
 
 
@@ -16,12 +16,17 @@ I want to do a prototype of *most* of hot-reloading for most of the game system.
 
 - Hot Reloading Lib
 
-  - Contains classes related to hot reloading (e.g. `IPluginSystem`)
+  - Contains classes related to hot reloading (e.g. `IPlugin` and `PluginSystem`)
   - May be part of Core lib
 
-- System interface:
+- Plugin
 
-  - The system defines an interface, which describes the arguments (allowing for dependency injection without service locator pattern)
+  - The dll that is hot-reloaded - implements the plugin API
+
+- Plugin API 
+
+  - Class representation of the plugin
+  - Constructs the
 
 - System:
 
@@ -39,5 +44,6 @@ Flows:
     - We could register some plugin that the entities are part of, which in turn can trigger a reload of the relevant entities in the ECS system
 - Systems need some kind of dependency management between them, to ensure they are loaded in the correct order (e.g. when a one system references entities from another system)
   - [?] How to do this?
-
+  - Note: dependency management, is not necessary without entity system
+  
 - It shouldn't be necessary to have a project per *Entity* system - we should be able to have multiple systems per project (dll)

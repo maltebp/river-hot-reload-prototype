@@ -2,17 +2,15 @@
 
 #include <string>
 
+#include <river/plugin.hpp>
+
 
 namespace game::plugin_b {
 
-    class IPlugin {
+    class IPlugin : rv::Plugin {
     public:
 
         virtual void hello() = 0;
-
-    protected:
-
-        IPlugin() = default;
 
     public:
 
