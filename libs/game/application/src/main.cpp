@@ -9,11 +9,15 @@ int main(int argc, char** argv) {
     rv::PluginManager plugin_manager = { };
 
     // These will eventually be passed via macros
-    plugin_manager.register_plugin("game.engine.dll");
-    plugin_manager.register_plugin("game.plugin_b.dll");
-    plugin_manager.register_plugin("game.plugin_a.dll");
+    plugin_manager.register_plugin("game.plugin_b", { });
+    plugin_manager.register_plugin("game.engine", { "game.plugin_a", "game.plugin_b" });
+    plugin_manager.register_plugin("game.plugin_a", { });
 
-    assert(plugin_manager.entry_point != nullptr);
+    plugin_manager.load_plugin("game.plugin_b");
+    plugin_manager.load_plugin("game.engine");
+    plugin_manager.load_plugin("game.plugin_a");
+
+    assert(plugin_manager.main_plugin != nullptr);
 
     while( true ) {
 
@@ -22,7 +26,7 @@ int main(int argc, char** argv) {
             plugin_manager.reload_changed_plugins();
         }
 
-        plugin_manager.entry_point->update();
+        plugin_manager.main_plugin->update();
     }
 
     return 0;

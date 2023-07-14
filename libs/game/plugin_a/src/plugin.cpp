@@ -12,15 +12,26 @@ void Plugin::hello() {
 }
 
 
-Plugin* plugin = new Plugin();
+Plugin* plugin;
 
-extern "C" __declspec(dllexport) rv::Plugin* plugin_start() {
-    std::cout << "  Plugin A: starting" << std::endl;
-    return plugin;
+extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
+    rv::PluginManager* manager, 
+    rv::Plugin** dependencies, 
+    int dependencies_count
+) {
+    plugin = new Plugin(
+        manager,
+        typeid(Plugin).name(),
+        "game.plugin_a",
+        std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
+    );
+
+    // TODO: Ensure that passed dependencies match expected
+
+    // TODO: Test if this works, or if it has to be cast to rv::MainPlugin
+    return (rv::Plugin*)plugin;
 }
 
-
 extern "C" __declspec(dllexport) void plugin_stop() {
-    std::cout << "  Plugin A: stopping" << std::endl;
     delete plugin;
 }

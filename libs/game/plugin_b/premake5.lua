@@ -11,8 +11,7 @@ project "game.plugin_b"
 
     includedirs {
         "include",
-        "../../river/include",
-        "../plugin_a/include"
+        "../../river/include"
     }
 
     links "river"

@@ -8,15 +8,11 @@
 
 namespace game::plugin_a {
 
-
     class Plugin : public rv::Plugin {
+        using rv::Plugin::Plugin;
     public:
 
         GAME_PLUGIN_A_API void hello();
-
-    public:
-
-        inline static const std::string dll_name = "game.plugin_a.dll";
 
     };
 

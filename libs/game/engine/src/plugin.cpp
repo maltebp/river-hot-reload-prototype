@@ -5,12 +5,10 @@
 #include <river/plugin_manager.hpp>
 #include <river/hello.hpp>
 #include <game/plugin_a/plugin.hpp>
-#include <game/plugin_b/i_plugin.hpp>
+#include <game/plugin_b/plugin.hpp>
 
 using namespace game::engine;
 
-
-const std::string Plugin::dll_name = "game.engine.dll";
 
 bool Plugin::update() {
     
@@ -20,11 +18,11 @@ bool Plugin::update() {
     std::getline(std::cin, input);
 
     if( input == "hello" ) {
-        this->get_manager()->get_plugin<game::plugin_a::Plugin>()->hello();
-        this->get_manager()->get_plugin<game::plugin_b::Plugin>()->hello();
+        this->manager->get_plugin<game::plugin_a::Plugin>()->hello();
+        this->manager->get_plugin<game::plugin_b::Plugin>()->hello();
     }
     else if( input == "reload" ) {
-        this->get_manager()->reload_next_frame = true;
+        this->manager->reload_next_frame = true;
     }
     else if( input == "quit" ) {
         std::cout << "Quitting.." << std::endl;
@@ -37,14 +35,26 @@ bool Plugin::update() {
     return true;
 }
 
-Plugin* plugin = new Plugin();
+Plugin* plugin;
 
-extern "C" __declspec(dllexport) rv::Plugin* plugin_start() {
-    std::cout << "  Plugin 'game.engine': starting" << std::endl;
-    return plugin;
+extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
+    rv::PluginManager* manager, 
+    rv::Plugin** dependencies, 
+    int dependencies_count
+) {
+    plugin = new Plugin(
+        manager,
+        typeid(Plugin).name(),
+        "game.engine",
+        std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
+    );
+
+    // TODO: Ensure that passed dependencies match expected
+
+    // TODO: Test if this works, or if it has to be cast to rv::MainPlugin
+    return (rv::Plugin*)plugin;
 }
 
 extern "C" __declspec(dllexport) void plugin_stop() {
-    std::cout << "  Plugin 'game.engine': starting" << std::endl;
     delete plugin;
 }

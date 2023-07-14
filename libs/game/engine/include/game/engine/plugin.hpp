@@ -6,12 +6,11 @@
 
 namespace game::engine {
 
-    class Plugin : public rv::EntryPointPlugin {
+    class Plugin : public rv::MainPlugin {
+        using rv::MainPlugin::MainPlugin;
     public:
 
         virtual bool update() override;
-
-        static const std::string dll_name;
 
     };
 

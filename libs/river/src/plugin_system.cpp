@@ -6,7 +6,7 @@
 using namespace rv;
 
 
-PluginSystem::PluginSystem(Plugin* plugin)
-    :   plugin(plugin),
-        id(plugin->get_manager()->generate_system_id())
-{ }
+// PluginSystem::PluginSystem(Plugin* plugin)
+//     :   plugin(plugin),
+//         id(plugin->manager()->generate_system_id())
+// { }

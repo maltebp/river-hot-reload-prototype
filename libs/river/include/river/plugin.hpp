@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace rv {
 
@@ -13,42 +14,59 @@ namespace rv {
 
     public:
 
-        PluginManager* get_manager() const {
-            return plugin_manager;
-        }   
+        Plugin(
+            PluginManager* manager, 
+            std::string class_name, 
+            std::string name, 
+            std::vector<Plugin*> dependencies
+        )
+            :   Plugin(manager, class_name, name, dependencies, false)
+        { }
 
     public:
+            
+        PluginManager* const manager; 
 
-        const bool is_entry_point;
+        const std::string class_name;
 
-        const std::string hello = "Hello World";
+        const std::string name;
+
+        const std::vector<Plugin*> dependencies; 
+
+        const bool is_main_plugin = true;
 
     protected:
 
-        Plugin() : is_entry_point(false) { }
-
-        Plugin(bool is_entry_point)
-            :   is_entry_point(is_entry_point)
+        Plugin(
+            PluginManager* manager, 
+            std::string class_name,
+            std::string name, 
+            std::vector<Plugin*> dependencies,
+            bool is_main_plugin
+        ) 
+            :   manager(manager),
+                class_name(class_name),
+                name(name),
+                dependencies(dependencies),
+                is_main_plugin(is_main_plugin)
         { }
-
-    private:
-
-        // TODO: This should be passed as argument
-        PluginManager* plugin_manager; 
 
     };
 
 
-    class EntryPointPlugin : public Plugin {
+    class MainPlugin : public Plugin {
     public:
 
-        virtual bool update() = 0;
-
-    protected:
-
-        EntryPointPlugin()
-            :   Plugin(true)
+        MainPlugin(
+            PluginManager* manager, 
+            std::string class_name,
+            std::string name, 
+            std::vector<Plugin*> dependencies
+        )
+            :   Plugin(manager, class_name, name, dependencies, true)
         { }
+
+        virtual bool update() = 0;
 
     };
 

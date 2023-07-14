@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <river/core.hpp>
 
@@ -9,26 +10,26 @@
 namespace rv {
 
     class Plugin;
-    class EntryPointPlugin;
+    class MainPlugin;
 
 
     class PluginManager {
     public:
 
-        void register_plugin(const std::string& dll_name) {
-            this->register_and_load_plugin(dll_name);
-        }
+        RV_API void register_plugin(const std::string& name, const std::vector<std::string>& dependencies);
+
+        RV_API void load_plugin(const std::string& name);
 
         template<typename P>
-        P* get_plugin() {            
-            return (P*)get_plugin(P::dll_name);
+        P* get_plugin() {
+            return (P*)get_plugin(typeid(P).name());
         }
 
         RV_API void reload_changed_plugins();
 
         int32_t generate_system_id();
 
-        rv::EntryPointPlugin* entry_point = nullptr;
+        rv::MainPlugin* main_plugin = nullptr;
 
         // TODO: this is just temp
         bool reload_next_frame = false;
@@ -39,15 +40,15 @@ namespace rv {
 
     private:
 
-        RV_API Plugin* register_and_load_plugin(const std::string& dll_name);
+        RV_API Plugin* register_and_load_plugin(const std::string& name);
 
-        RV_API Plugin* get_plugin(const std::string& dll_name);        
+        RV_API Plugin* get_plugin(const std::string& plugin_class_name);        
 
-        PluginInfo* get_plugin_info(const std::string& dll_name);
+        PluginInfo* get_plugin_info(const std::string& name);
 
         Plugin* load_plugin(PluginInfo* plugin_info);
 
-        void unload_plugin(PluginInfo* plugin_info);
+        std::unordered_set<PluginInfo*> unload_plugin(PluginInfo* plugin_info);
 
     private:
 
