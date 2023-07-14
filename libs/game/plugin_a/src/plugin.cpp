@@ -1,18 +1,18 @@
 #include <iostream>
 
 #include <river/hello.hpp>
-#include <game/plugin_a/i_plugin_a.hpp>
+#include <game/plugin_a/plugin.hpp>
 
 using namespace game::plugin_a;
 
 
-void PluginA::hello() {
-    rv::hello("PluginA3");        
-    rv::hello("PluginA");        
+void Plugin::hello() {
+    rv::hello("Plugin3");        
+    rv::hello("Plugin");        
 }
 
 
-PluginA* plugin = new PluginA();
+Plugin* plugin = new Plugin();
 
 extern "C" __declspec(dllexport) rv::Plugin* plugin_start() {
     std::cout << "  Plugin A: starting" << std::endl;

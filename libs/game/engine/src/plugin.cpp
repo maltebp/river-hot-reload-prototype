@@ -4,7 +4,7 @@
 
 #include <river/plugin_manager.hpp>
 #include <river/hello.hpp>
-#include <game/plugin_a/i_plugin_a.hpp>
+#include <game/plugin_a/plugin.hpp>
 #include <game/plugin_b/i_plugin.hpp>
 
 using namespace game::engine;
@@ -20,7 +20,7 @@ bool Plugin::update() {
     std::getline(std::cin, input);
 
     if( input == "hello" ) {
-        this->get_manager()->get_plugin<game::plugin_a::PluginA>()->hello();
+        this->get_manager()->get_plugin<game::plugin_a::Plugin>()->hello();
         this->get_manager()->get_plugin<game::plugin_b::Plugin>()->hello();
     }
     else if( input == "reload" ) {

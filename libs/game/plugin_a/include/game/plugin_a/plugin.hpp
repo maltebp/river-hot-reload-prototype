@@ -9,7 +9,7 @@
 namespace game::plugin_a {
 
 
-    class PluginA : public rv::Plugin {
+    class Plugin : public rv::Plugin {
     public:
 
         GAME_PLUGIN_A_API void hello();
