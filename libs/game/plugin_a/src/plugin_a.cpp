@@ -6,20 +6,15 @@
 using namespace game::plugin_a;
 
 
-class PluginA : public IPluginA {
-public:
+void PluginA::hello() {
+    rv::hello("PluginA3");        
+    rv::hello("PluginA");        
+}
 
-    virtual void hello() override {
-        rv::hello("PluginA3");        
-        rv::hello("PluginA");        
-    }
-    
-};
 
 PluginA* plugin = new PluginA();
 
-
-extern "C" __declspec(dllexport) IPluginA* plugin_start() {
+extern "C" __declspec(dllexport) rv::Plugin* plugin_start() {
     std::cout << "  Plugin A: starting" << std::endl;
     return plugin;
 }

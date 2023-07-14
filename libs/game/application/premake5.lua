@@ -16,7 +16,6 @@ project "game.application"
     }
 
     links "river"
-    links "game.engine"
 
     filter "configurations:debug"
         defines { "DEBUG" }

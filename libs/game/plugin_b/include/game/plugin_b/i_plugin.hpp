@@ -4,13 +4,15 @@
 
 #include <river/plugin.hpp>
 
+#include <game/plugin_b/api.hpp>
+
 
 namespace game::plugin_b {
 
-    class IPlugin : rv::Plugin {
+    class Plugin : public rv::Plugin {
     public:
 
-        virtual void hello() = 0;
+        GAME_PLUGIN_B_API void hello();
 
     public:
 

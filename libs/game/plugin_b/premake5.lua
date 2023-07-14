@@ -17,6 +17,10 @@ project "game.plugin_b"
 
     links "river"
 
+    defines {
+        "GAME_PLUGIN_B_API_IMPLMENTATION"
+    }
+
     filter "configurations:Debug"
         defines { "DEBUG" }
         symbols "On"

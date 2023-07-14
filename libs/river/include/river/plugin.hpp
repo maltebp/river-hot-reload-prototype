@@ -17,14 +17,38 @@ namespace rv {
             return plugin_manager;
         }   
 
+    public:
+
+        const bool is_entry_point;
+
+        const std::string hello = "Hello World";
+
     protected:
 
-        Plugin() = default;
+        Plugin() : is_entry_point(false) { }
+
+        Plugin(bool is_entry_point)
+            :   is_entry_point(is_entry_point)
+        { }
 
     private:
 
         // TODO: This should be passed as argument
         PluginManager* plugin_manager; 
+
+    };
+
+
+    class EntryPointPlugin : public Plugin {
+    public:
+
+        virtual bool update() = 0;
+
+    protected:
+
+        EntryPointPlugin()
+            :   Plugin(true)
+        { }
 
     };
 

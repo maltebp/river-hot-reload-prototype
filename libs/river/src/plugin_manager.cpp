@@ -129,6 +129,11 @@ Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
 
     plugin->plugin_manager = this;
 
+    if( plugin->is_entry_point ) {
+        assert(entry_point == nullptr);
+        entry_point = (EntryPointPlugin*)plugin;
+    }
+
     std::cout << "  Loaded '" << plugin_info->dll_name << "'" << std::endl;
 
     return plugin_info->plugin;

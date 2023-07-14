@@ -7,23 +7,18 @@
 using namespace game::plugin_b;
 
 
-class Plugin : public IPlugin {
-public:
-
-    virtual void hello() override {
-        rv::hello("Plugin B 2");        
-    }
-    
-};
+void Plugin::hello() {
+    rv::hello("Plugin B 2");
+}
 
 
 Plugin* plugin = nullptr;
 
 
-extern "C" __declspec(dllexport) IPlugin* plugin_start() {
+extern "C" __declspec(dllexport) rv::Plugin* plugin_start() {
     plugin = new Plugin();
     std::cout << "  Plugin B: starting" << std::endl;
-    return plugin;
+    return (rv::Plugin*)plugin;
 }
 
 

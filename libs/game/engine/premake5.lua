@@ -17,6 +17,8 @@ project "game.engine"
     }
 
     links "river"
+    links "game.plugin_a"
+    links "game.plugin_b"
 
     defines {
         "GAME_ENGINE_API_IMPLEMENTATION "

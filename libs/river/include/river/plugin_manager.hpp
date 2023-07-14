@@ -9,14 +9,14 @@
 namespace rv {
 
     class Plugin;
+    class EntryPointPlugin;
 
 
     class PluginManager {
     public:
 
-        template<typename P>
-        P* register_and_load_plugin() {
-            return (P*)register_and_load_plugin(P::dll_name);
+        void register_plugin(const std::string& dll_name) {
+            this->register_and_load_plugin(dll_name);
         }
 
         template<typename P>
@@ -27,6 +27,11 @@ namespace rv {
         RV_API void reload_changed_plugins();
 
         int32_t generate_system_id();
+
+        rv::EntryPointPlugin* entry_point = nullptr;
+
+        // TODO: this is just temp
+        bool reload_next_frame = false;
 
     private:
 
