@@ -3,15 +3,18 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 #include <river/core.hpp>
+#include <river/plugin_system.hpp>
+#include <river/plugin_system_ref.hpp>
 
 
 namespace rv {
 
     class Plugin;
     class MainPlugin;
-
+    class PluginSystem;
 
     class PluginManager {
     public:
@@ -25,9 +28,19 @@ namespace rv {
             return (P*)get_plugin(typeid(P).name());
         }
 
-        RV_API void reload_changed_plugins();
+        template<class S, typename... Args>
+        PluginSystemRef<S> create_system() {
+            return this->create_system(
+                typeid(S).name(), 
+                [&](PluginSystemType* type, PluginSystem::Id id) { 
+                    return new S(type, id, this, Args...);
+                }
+            );
+        }
 
-        int32_t generate_system_id();
+        RV_API [[nodiscard]] PluginSystem* get_system(const std::string& type_name, PluginSystem::Id id) const;
+
+        RV_API void reload_changed_plugins();
 
         rv::MainPlugin* main_plugin = nullptr;
 
@@ -37,6 +50,7 @@ namespace rv {
     private:
 
         class PluginInfo;
+        class PluginSystemInfo;
 
     private:
 
@@ -50,11 +64,17 @@ namespace rv {
 
         std::unordered_set<PluginInfo*> unload_plugin(PluginInfo* plugin_info);
 
+        RV_API [[nodiscard]] PluginSystem* create_system(const std::string& type_name, std::function<PluginSystem*(PluginSystemType*, PluginSystem::Id)> system_constructor);
+
     private:
 
         std::unordered_map<std::string, PluginInfo*> plugin_infos;
+        
+        std::unordered_map<std::string, PluginSystemType*> plugin_system_types;
 
-        int32_t next_system_id = 1;
+        std::unordered_map<PluginSystem::Id, PluginSystemInfo*> plugin_system_infos;
+
+        PluginSystem::Id next_system_id = 1;
 
     };
 

@@ -37,6 +37,32 @@ public:
     
 };
 
+
+class PluginManager::PluginSystemInfo {
+public:
+
+    PluginSystemInfo(
+        PluginSystemType* system_type, 
+        PluginInfo* plugin_info, 
+        PluginSystem::Id system_id,
+        PluginSystem* system
+    )
+        :   system_type(system_type),
+            plugin_info(plugin_info),
+            system_id(system_id),
+            system(system)
+    { } 
+
+    PluginSystemType* const system_type;
+
+    PluginInfo* const plugin_info;
+
+    const PluginSystem::Id system_id;
+
+    PluginSystem* system;
+
+};
+
 void PluginManager::register_plugin(const std::string& name, const std::vector<std::string>& dependencies) {
     assert(this->plugin_infos.find(name) == this->plugin_infos.end());
     PluginInfo* plugin_info = new PluginInfo(name, dependencies);
@@ -176,6 +202,11 @@ Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
     plugin_info->dll_handle = dll_handle;
     plugin_info->loaded = true;
     plugin_info->plugin = plugin;
+    
+    for( PluginSystemType* const plugin_system_type : plugin->exposed_system_types ) {
+        assert(plugin_system_types.find(plugin_system_type->class_name) == plugin_system_types.end());
+        plugin_system_types[plugin_system_type->class_name] = plugin_system_type;
+    }
 
     if( plugin->is_main_plugin ) {
         assert(main_plugin == nullptr);
@@ -223,8 +254,36 @@ std::unordered_set<PluginManager::PluginInfo*> PluginManager::unload_plugin(
 }
 
 
-int32_t PluginManager::generate_system_id() {
-    int32_t id = this->next_system_id;
-    this->next_system_id++;
-    return id;
+PluginSystem* PluginManager::create_system(const std::string& type_name, std::function<PluginSystem*(PluginSystemType*, PluginSystem::Id)> system_constructor) {
+    
+    auto it = this->plugin_system_types.find(type_name);
+    assert(it != this->plugin_system_types.end());
+
+    PluginSystemType* type = it->second;
+    
+    PluginSystem::Id id = this->next_system_id;
+    PluginSystem* system = system_constructor(type, id);
+    
+    // TODO: type->plugin is nullptr
+    PluginSystemInfo* system_info = new PluginSystemInfo(
+        type,
+        this->plugin_infos[type->plugin->name],
+        id,
+        system                
+    );
+
+    this->plugin_system_infos[id] = system_info; 
+
+    return system;
+}
+
+
+PluginSystem* PluginManager::get_system(const std::string& type_name, PluginSystem::Id id) const {
+    auto it = this->plugin_system_infos.find(id);
+    assert(it != this->plugin_system_infos.end());
+
+    PluginSystemInfo* plugin_system_info = it->second;
+    assert(plugin_system_info->system_type->class_name == type_name);
+
+    return plugin_system_info->system;            
 }

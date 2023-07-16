@@ -27,7 +27,6 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
 
     // TODO: Ensure that passed dependencies match expected
 
-    // TODO: Test if this works, or if it has to be cast to rv::MainPlugin
     return (rv::Plugin*)plugin;
 }
 

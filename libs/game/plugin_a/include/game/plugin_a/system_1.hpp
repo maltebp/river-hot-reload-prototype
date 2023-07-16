@@ -2,15 +2,17 @@
 
 #include <river/plugin_system.hpp>
 
+#include <game/plugin_a/api.hpp>
+
 
 namespace game::plugin_a {
 
-    class ISystemA1 : public rv::PluginSystem {
+    class System1 : public rv::PluginSystem {
     public:
 
         using rv::PluginSystem::PluginSystem;
 
-        virtual void hello() = 0;
+        GAME_PLUGIN_A_API void hello();
         
     };
 

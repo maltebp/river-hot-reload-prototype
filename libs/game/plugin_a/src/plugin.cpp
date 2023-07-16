@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include <river/plugin_system.hpp>
 #include <river/hello.hpp>
+
 #include <game/plugin_a/plugin.hpp>
+#include <game/plugin_a/system_1.hpp>
 
 using namespace game::plugin_a;
 
@@ -26,9 +29,10 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
         std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
     );
 
+    plugin->register_systems<System1>();
+
     // TODO: Ensure that passed dependencies match expected
 
-    // TODO: Test if this works, or if it has to be cast to rv::MainPlugin
     return (rv::Plugin*)plugin;
 }
 

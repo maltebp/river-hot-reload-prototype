@@ -5,12 +5,23 @@
 #include <river/plugin_manager.hpp>
 #include <river/hello.hpp>
 #include <game/plugin_a/plugin.hpp>
+#include <game/plugin_a/system_1.hpp>
 #include <game/plugin_b/plugin.hpp>
 
+using namespace game;
 using namespace game::engine;
 
+// TODO: Setup proper initialization of plugin
+bool initialized = false;
+
+rv::PluginSystemRef<plugin_a::System1> system_1;
 
 bool Plugin::update() {
+
+    if( !initialized ) {
+        initialized = true;
+        system_1 = this->manager->create_system<plugin_a::System1>();
+    }
     
     std::cout << std::endl << "> ";
 
@@ -20,6 +31,7 @@ bool Plugin::update() {
     if( input == "hello" ) {
         this->manager->get_plugin<game::plugin_a::Plugin>()->hello();
         this->manager->get_plugin<game::plugin_b::Plugin>()->hello();
+        system_1.get_system()->hello();
     }
     else if( input == "reload" ) {
         this->manager->reload_next_frame = true;

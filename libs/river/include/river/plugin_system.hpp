@@ -1,26 +1,44 @@
 #pragma once
 
-#include <vector>
-
+#include <iostream>
+#include <cassert>
 
 namespace rv {
 
-    class Plugin;
-    
+    class PluginSystemType;
+    class PluginManager;
     
     class PluginSystem {
-    protected:
-        
-        PluginSystem(Plugin* plugin);
+    public:
 
-    private:
+        using Id = int32_t;
+
+    public:
+
+        PluginSystem(PluginSystemType* type, Id id, PluginManager* manager)
+            :   type(type),
+                id(id),
+                manager(manager)
+        { 
+            assert(id != 0);
+            assert(type != nullptr);
+            assert(manager != nullptr);
+        }
+
+        PluginSystem() 
+            :   type(type),
+                id(id),
+                manager(manager)
+        { }
+
+    public:
 
         const int32_t id;
 
-        Plugin* const plugin;
+        PluginManager* const manager;
 
-        std::vector<PluginSystem*> dependencies;
-
+        PluginSystemType* const type;
+ 
     };
 
 }
