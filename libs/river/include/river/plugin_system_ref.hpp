@@ -19,13 +19,13 @@ namespace rv {
     public:
 
         PluginSystemRef() 
-            :   type(nullptr),
+            :   type_id(),
                 manager(nullptr),
                 id(0)
         { }
 
         PluginSystemRef(PluginSystem* system) 
-            :   type(system->type),
+            :   type_id(system->type_id),
                 manager(system->manager),
                 id(system->id)
         { }
@@ -36,14 +36,14 @@ namespace rv {
 
         [[nodiscard]] S* get_system() const {
             assert(id != 0);
-            return (S*)manager->get_system(typeid(S).name(), id);
+            return (S*)manager->get_system(type_id, id);
         }
 
         [[nodiscard]] PluginManager* get_manager() const {
             return manager;
         }
 
-        [[nodiscard]] PluginSystem::Id get_id() const {
+        [[nodiscard]] PluginSystemId get_id() const {
             return id;
         }
 
@@ -53,11 +53,11 @@ namespace rv {
         
     private:
 
-        PluginSystemType* type;
+        PluginSystemTypeId type_id;
 
         PluginManager* manager;
 
-        PluginSystem::Id id;
+        PluginSystemId id;
 
     };
 

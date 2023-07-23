@@ -29,16 +29,20 @@ namespace rv {
         }
 
         template<class S, typename... Args>
-        PluginSystemRef<S> create_system() {
+        PluginSystemRef<S> create_system(Args... args) {
             return this->create_system(
                 typeid(S).name(), 
-                [&](PluginSystemType* type, PluginSystem::Id id) { 
-                    return new S(type, id, this, Args...);
+
+                // Passing this "construction lambda" to allow for
+                // forward declaring create_system method
+                [&](const PluginSystemParameters& parameters) { 
+                    return new S(parameters, args...);
                 }
             );
         }
 
-        RV_API [[nodiscard]] PluginSystem* get_system(const std::string& type_name, PluginSystem::Id id) const;
+        RV_API [[nodiscard]] PluginSystem* get_system(
+            const PluginSystemTypeId& type_id, PluginSystemId id) const;
 
         RV_API void reload_changed_plugins();
 
@@ -62,19 +66,30 @@ namespace rv {
 
         Plugin* load_plugin(PluginInfo* plugin_info);
 
-        std::unordered_set<PluginInfo*> unload_plugin(PluginInfo* plugin_info);
+        void unload_plugin(
+            PluginInfo* plugin_info, 
+            std::unordered_set<PluginInfo*>& plugins, 
+            std::unordered_set<PluginSystemInfo*>& unloaded_systems
+        );
 
-        RV_API [[nodiscard]] PluginSystem* create_system(const std::string& type_name, std::function<PluginSystem*(PluginSystemType*, PluginSystem::Id)> system_constructor);
+        RV_API [[nodiscard]] PluginSystem* create_system(
+            const std::string& type_name,
+            std::function<PluginSystem*(const PluginSystemParameters&)> system_constructor
+        );
 
     private:
 
+         // TODO: This map should be mapped with "non-class" name (like PluginSystemTypeId)
         std::unordered_map<std::string, PluginInfo*> plugin_infos;
         
-        std::unordered_map<std::string, PluginSystemType*> plugin_system_types;
+        // Mapping from system class name
+        std::unordered_map<std::string, PluginSystemTypeId> plugin_system_type_ids;
 
-        std::unordered_map<PluginSystem::Id, PluginSystemInfo*> plugin_system_infos;
+        std::unordered_map<PluginSystemTypeId, PluginSystemType*> plugin_system_types;
 
-        PluginSystem::Id next_system_id = 1;
+        std::unordered_map<PluginSystemId, PluginSystemInfo*> plugin_system_infos;
+
+        PluginSystemId next_system_id = 1;
 
     };
 

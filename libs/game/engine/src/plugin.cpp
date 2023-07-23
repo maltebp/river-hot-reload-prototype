@@ -20,7 +20,7 @@ bool Plugin::update() {
 
     if( !initialized ) {
         initialized = true;
-        system_1 = this->manager->create_system<plugin_a::System1>();
+        system_1 = this->manager->create_system<plugin_a::System1>(42);
     }
     
     std::cout << std::endl << "> ";

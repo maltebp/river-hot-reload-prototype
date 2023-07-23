@@ -29,7 +29,7 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
         std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
     );
 
-    plugin->register_systems<System1>();
+    plugin->register_system<System1>("System1");
 
     // TODO: Ensure that passed dependencies match expected
 

@@ -9,6 +9,7 @@
 #include <windows.h>
 
 #include <river/plugin.hpp>
+#include <river/serialization.hpp>
 
 using namespace rv;
 
@@ -29,6 +30,8 @@ public:
 
     std::vector<PluginInfo*> dependants;
 
+    std::vector<PluginManager::PluginSystemInfo*> systems;
+
     DllHandle dll_handle;
 
     Plugin* plugin = nullptr;
@@ -42,24 +45,26 @@ class PluginManager::PluginSystemInfo {
 public:
 
     PluginSystemInfo(
-        PluginSystemType* system_type, 
+        PluginSystemTypeId system_type_id, 
         PluginInfo* plugin_info, 
-        PluginSystem::Id system_id,
+        PluginSystemId system_id,
         PluginSystem* system
     )
-        :   system_type(system_type),
+        :   system_type_id(system_type_id),
             plugin_info(plugin_info),
             system_id(system_id),
             system(system)
     { } 
 
-    PluginSystemType* const system_type;
+    const PluginSystemTypeId system_type_id;
 
     PluginInfo* const plugin_info;
 
-    const PluginSystem::Id system_id;
+    const PluginSystemId system_id;
 
     PluginSystem* system;
+
+    SerializedObject* serialized_system;
 
 };
 
@@ -96,23 +101,38 @@ void PluginManager::load_plugin(const std::string& name) {
 
 void PluginManager::reload_changed_plugins() {
 
-    std::unordered_set<PluginInfo*> all_unloaded_plugins;
+    std::unordered_set<PluginInfo*> unloaded_plugins;    
+    std::unordered_set<PluginSystemInfo*> unloaded_systems;
     
     for( auto [name, plugin_info] : this->plugin_infos ) {
     
-        bool plugin_is_changed = std::filesystem::exists(name + ".dll");
+        // TODO: Uncomment this after testing
+        //bool plugin_is_changed = std::filesystem::exists(name + ".dll");
+        bool plugin_is_changed = true;
         if( plugin_is_changed ) {
             std::cout << "  Plugin " << name << ": has changed" << std::endl;
-            std::unordered_set<PluginInfo*> unloaded_plugins = this->unload_plugin(plugin_info);
-            all_unloaded_plugins.insert(unloaded_plugins.begin(), unloaded_plugins.end());
+            this->unload_plugin(plugin_info, unloaded_plugins, unloaded_systems);
         }
         else {
             std::cout << "  Plugin " << name << ": has not changed" << std::endl;
         }
     }
 
-    for( PluginInfo* unloaded_plugin : all_unloaded_plugins ) {
+    for( PluginInfo* unloaded_plugin : unloaded_plugins ) {
         this->load_plugin(unloaded_plugin);
+    }
+
+    for( PluginSystemInfo* system_info : unloaded_systems ) {
+        PluginSystemType* system_type = this->plugin_system_types[system_info->system_type_id];
+
+        system_info->system = system_type->deserialization_constructor(
+            PluginSystemParameters{
+                system_info->system_type_id,
+                system_info->system_id, 
+                this
+            }, 
+            system_info->serialized_system
+        );
     }
 }
 
@@ -204,8 +224,11 @@ Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
     plugin_info->plugin = plugin;
     
     for( PluginSystemType* const plugin_system_type : plugin->exposed_system_types ) {
-        assert(plugin_system_types.find(plugin_system_type->class_name) == plugin_system_types.end());
-        plugin_system_types[plugin_system_type->class_name] = plugin_system_type;
+        assert(plugin_system_type_ids.find(plugin_system_type->class_name) == plugin_system_type_ids.end());
+        plugin_system_type_ids[plugin_system_type->class_name] = plugin_system_type->type_id;
+
+        assert(plugin_system_types.find(plugin_system_type->type_id) == plugin_system_types.end());
+        plugin_system_types[plugin_system_type->type_id] = plugin_system_type;
     }
 
     if( plugin->is_main_plugin ) {
@@ -218,20 +241,33 @@ Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
     return plugin_info->plugin;
 }
 
-std::unordered_set<PluginManager::PluginInfo*> PluginManager::unload_plugin(
-    PluginManager::PluginInfo* plugin_info
+void PluginManager::unload_plugin(
+            PluginManager::PluginInfo* plugin_info, 
+            std::unordered_set<PluginManager::PluginInfo*>& unloaded_plugins, 
+            std::unordered_set<PluginManager::PluginSystemInfo*>& unloaded_systems
 ) {
-    if( !plugin_info->loaded ) return { };
+
+    if( !plugin_info->loaded ) return;
 
     std::cout << "  Plugin " << plugin_info->name << ": unloading" << std::endl;
 
-    std::unordered_set<PluginInfo*> unloaded_plugins { plugin_info };
-
-    // Load dependencies
     for( PluginInfo* dependant : plugin_info->dependants ) {
-        std::unordered_set<PluginInfo*> dependants_unloaded_plugins = this->unload_plugin(dependant);
-        unloaded_plugins.insert(dependants_unloaded_plugins.begin(), dependants_unloaded_plugins.end());
+        this->unload_plugin(dependant, unloaded_plugins, unloaded_systems);
     }
+
+    for( PluginSystemInfo* system_info : plugin_info->systems ) {
+        unloaded_systems.insert(system_info);
+        system_info->serialized_system = system_info->system->serialize();
+        // TODO: Will deleting base class also delete the inheriting class?
+        delete system_info->system;
+    }
+
+    for( PluginSystemType* exposed_system : plugin_info->plugin->exposed_system_types ) {
+        this->plugin_system_type_ids.erase(exposed_system->class_name);
+        this->plugin_system_types.erase(exposed_system->type_id);
+    }
+
+    unloaded_plugins.insert(plugin_info);
 
     bool dll_unloaded = FreeLibrary(plugin_info->dll_handle);
     if( !dll_unloaded ) {
@@ -249,28 +285,36 @@ std::unordered_set<PluginManager::PluginInfo*> PluginManager::unload_plugin(
     plugin_info->dll_handle = { };
 
     std::cout << "  Plugin " << plugin_info->name << ": unloaded" << std::endl;
-
-    return unloaded_plugins;
 }
 
 
-PluginSystem* PluginManager::create_system(const std::string& type_name, std::function<PluginSystem*(PluginSystemType*, PluginSystem::Id)> system_constructor) {
-    
-    auto it = this->plugin_system_types.find(type_name);
-    assert(it != this->plugin_system_types.end());
+PluginSystem* PluginManager::create_system(
+    const std::string& class_name,
+    std::function<PluginSystem*(const PluginSystemParameters&)> system_constructor
+) {   
+    auto it = this->plugin_system_type_ids.find(class_name);
+    assert(it != this->plugin_system_type_ids.end());
 
-    PluginSystemType* type = it->second;
-    
-    PluginSystem::Id id = this->next_system_id;
-    PluginSystem* system = system_constructor(type, id);
-    
-    // TODO: type->plugin is nullptr
+    PluginSystemTypeId type_id = it->second;
+
+    PluginSystemId id = this->next_system_id;
+    this->next_system_id++;
+    assert(!this->plugin_system_infos.contains(id));
+
+    PluginSystem* system = system_constructor(
+        PluginSystemParameters{type_id, id, this}
+    );
+
+    PluginInfo* plugin_info = this->plugin_infos[type_id.get_plugin_name()];
+
     PluginSystemInfo* system_info = new PluginSystemInfo(
-        type,
-        this->plugin_infos[type->plugin->name],
+        type_id,
+        plugin_info,
         id,
         system                
     );
+
+    plugin_info->systems.push_back(system_info);
 
     this->plugin_system_infos[id] = system_info; 
 
@@ -278,12 +322,13 @@ PluginSystem* PluginManager::create_system(const std::string& type_name, std::fu
 }
 
 
-PluginSystem* PluginManager::get_system(const std::string& type_name, PluginSystem::Id id) const {
+PluginSystem* PluginManager::get_system(const PluginSystemTypeId& type_id, PluginSystemId id) const {
+    
     auto it = this->plugin_system_infos.find(id);
     assert(it != this->plugin_system_infos.end());
 
     PluginSystemInfo* plugin_system_info = it->second;
-    assert(plugin_system_info->system_type->class_name == type_name);
+    assert(plugin_system_info->system_type_id == type_id);
 
     return plugin_system_info->system;            
 }

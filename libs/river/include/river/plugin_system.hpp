@@ -3,41 +3,55 @@
 #include <iostream>
 #include <cassert>
 
+#include <river/plugin_system_type.hpp>
+#include <river/serialization.hpp>
+
 namespace rv {
 
     class PluginSystemType;
     class PluginManager;
+
+    using PluginSystemId = int32_t;
+
+    struct PluginSystemParameters {
+        PluginSystemTypeId type_id;
+        PluginSystemId id;
+        PluginManager* manager;
+    };
     
     class PluginSystem {
     public:
 
-        using Id = int32_t;
-
-    public:
-
-        PluginSystem(PluginSystemType* type, Id id, PluginManager* manager)
-            :   type(type),
-                id(id),
-                manager(manager)
+        PluginSystem(const PluginSystemParameters& parameters)
+            :   type_id(parameters.type_id),
+                id(parameters.id),
+                manager(parameters.manager)
         { 
             assert(id != 0);
-            assert(type != nullptr);
+            assert(!type_id.is_empty());
             assert(manager != nullptr);
         }
 
-        PluginSystem() 
-            :   type(type),
-                id(id),
-                manager(manager)
-        { }
+        SerializedObject* serialize() const {
+            // TODO: Consider removing this serialized data (its never really used, and not really needed)
+            SerializedObject* serialized_object = new SerializedObject();
+            serialized_object->properties["type_id"] = this->type_id.serialize();
+            serialized_object->properties["id"] = new SerializedInt(id);
+            serialize(serialized_object);
+            return serialized_object;
+        }
 
     public:
 
-        const int32_t id;
+        const PluginSystemTypeId type_id;
+
+        const PluginSystemId id;
 
         PluginManager* const manager;
 
-        PluginSystemType* const type;
+    protected:
+
+        virtual void serialize(SerializedObject* object_to_serialize_to) const = 0;
  
     };
 
