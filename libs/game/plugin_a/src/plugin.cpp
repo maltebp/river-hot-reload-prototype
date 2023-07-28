@@ -14,7 +14,6 @@ void Plugin::hello() {
     rv::hello("Plugin");        
 }
 
-
 Plugin* plugin;
 
 extern "C" __declspec(dllexport) rv::Plugin* plugin_start(

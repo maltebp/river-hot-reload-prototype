@@ -3,12 +3,13 @@
 #include <string>
 #include <vector>
 
+#include <river/plugin_manager.hpp>
 #include <river/plugin_system_type.hpp>
+#include <river/plugin_system_ref.hpp>
 
 namespace rv {
 
     class Plugin;
-    class PluginManager;
 
     class Plugin {
 
@@ -54,7 +55,7 @@ namespace rv {
 
         const std::vector<Plugin*> dependencies; 
 
-        const bool is_main_plugin = true;
+        const bool is_entry_point = true;
 
         std::vector<PluginSystemType*> exposed_system_types;
 
@@ -65,22 +66,21 @@ namespace rv {
             std::string class_name,
             std::string name, 
             std::vector<Plugin*> dependencies,
-            bool is_main_plugin
+            bool is_entry_point
         ) 
             :   manager(manager),
                 class_name(class_name),
                 name(name),
                 dependencies(dependencies),
-                is_main_plugin(is_main_plugin)
+                is_entry_point(is_entry_point)
         { }
 
     };
 
-
-    class MainPlugin : public Plugin {
+    class EntryPointPluginBase : public Plugin {
     public:
 
-        MainPlugin(
+        EntryPointPluginBase(
             PluginManager* manager, 
             std::string class_name,
             std::string name, 
@@ -89,7 +89,21 @@ namespace rv {
             :   Plugin(manager, class_name, name, dependencies, true)
         { }
 
-        virtual bool update() = 0;
+        virtual PluginSystemRef<EntryPointSystem> create_entry_point_system() = 0;
+        
+    };
+
+    template<typename S>
+    class EntryPointPlugin : public EntryPointPluginBase {
+    public:
+
+        using EntryPointPluginBase::EntryPointPluginBase;
+
+    public:
+
+        virtual PluginSystemRef<EntryPointSystem> create_entry_point_system() override {
+            return this->manager->create_system<S>();
+        }
 
     };
 

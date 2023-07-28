@@ -4,14 +4,12 @@
 
 #include <river/plugin.hpp>
 
+#include <game/engine/entry_point.hpp>
+
 namespace game::engine {
 
-    class Plugin : public rv::MainPlugin {
-        using rv::MainPlugin::MainPlugin;
-    public:
-
-        virtual bool update() override;
-
+    class Plugin : public rv::EntryPointPlugin<EntryPoint> {
+        using rv::EntryPointPlugin<EntryPoint>::EntryPointPlugin;
     };
 
 }

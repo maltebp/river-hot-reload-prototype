@@ -46,4 +46,13 @@ namespace rv {
 
     };
 
+    class SerializedBool : public SerializedElement {
+    public:
+
+        SerializedBool(bool value) : value(value) { }
+        
+        const bool value;
+
+    };
+
 }

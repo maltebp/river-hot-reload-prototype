@@ -68,6 +68,34 @@ public:
 
 };
 
+void PluginManager::run_update_loop() {
+    for( const auto& [plugin_name, plugin_info] : this->plugin_infos ) {
+        this->load_plugin(plugin_info);
+    }
+
+    assert(this->entry_point_plugin != nullptr);
+
+    this->entry_point_system = this->entry_point_plugin->create_entry_point_system();
+    assert(!this->entry_point_system.is_empty());
+
+    while( true ) {
+
+        EntryPointSystem::UpdateReturnCode update_return_code = this->entry_point_system.get_system()->update();
+
+        if( update_return_code == EntryPointSystem::UpdateReturnCode::Continue ) {
+            continue;
+        }
+
+        if( update_return_code == EntryPointSystem::UpdateReturnCode::Reload ) {
+            this->reload_changed_plugins();
+        }
+
+        if( update_return_code == EntryPointSystem::UpdateReturnCode::Shutdown ) {
+            return;            
+        }
+    }
+}
+
 void PluginManager::register_plugin(const std::string& name, const std::vector<std::string>& dependencies) {
     assert(this->plugin_infos.find(name) == this->plugin_infos.end());
     PluginInfo* plugin_info = new PluginInfo(name, dependencies);
@@ -231,9 +259,9 @@ Plugin* PluginManager::load_plugin(PluginManager::PluginInfo* plugin_info) {
         plugin_system_types[plugin_system_type->type_id] = plugin_system_type;
     }
 
-    if( plugin->is_main_plugin ) {
-        assert(main_plugin == nullptr);
-        main_plugin = (MainPlugin*)plugin;
+    if( plugin->is_entry_point ) {
+        assert(entry_point_plugin == nullptr);
+        entry_point_plugin = (EntryPointPluginBase*)plugin;
     }
 
     std::cout << "  Plugin " << plugin_info->name << ": loaded" << std::endl;
@@ -276,8 +304,8 @@ void PluginManager::unload_plugin(
         assert(false);
     }
 
-    if( this->main_plugin == plugin_info->plugin ) {
-        this->main_plugin = nullptr;
+    if( this->entry_point_plugin == plugin_info->plugin ) {
+        this->entry_point_plugin = nullptr;
     }
 
     plugin_info->loaded = false;
@@ -288,7 +316,7 @@ void PluginManager::unload_plugin(
 }
 
 
-PluginSystem* PluginManager::create_system(
+PluginSystem* PluginManager::create_system_internal(
     const std::string& class_name,
     std::function<PluginSystem*(const PluginSystemParameters&)> system_constructor
 ) {   

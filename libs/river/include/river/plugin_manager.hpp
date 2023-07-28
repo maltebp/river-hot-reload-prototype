@@ -9,15 +9,17 @@
 #include <river/plugin_system.hpp>
 #include <river/plugin_system_ref.hpp>
 
-
 namespace rv {
 
     class Plugin;
-    class MainPlugin;
     class PluginSystem;
+    class EntryPointPluginBase;
+    class EntryPointSystem;
 
     class PluginManager {
     public:
+
+        RV_API void run_update_loop();
 
         RV_API void register_plugin(const std::string& name, const std::vector<std::string>& dependencies);
 
@@ -30,26 +32,25 @@ namespace rv {
 
         template<class S, typename... Args>
         PluginSystemRef<S> create_system(Args... args) {
-            return this->create_system(
+             S* system = (S*)this->create_system_internal(
                 typeid(S).name(), 
 
                 // Passing this "construction lambda" to allow for
                 // forward declaring create_system method
-                [&](const PluginSystemParameters& parameters) { 
-                    return new S(parameters, args...);
+                [&](const PluginSystemParameters& base_parameters) { 
+                    return new S(base_parameters, args...);
                 }
             );
+
+            PluginSystemRef<S> system_ref = system;
+            
+            return system_ref;
         }
 
         RV_API [[nodiscard]] PluginSystem* get_system(
             const PluginSystemTypeId& type_id, PluginSystemId id) const;
 
         RV_API void reload_changed_plugins();
-
-        rv::MainPlugin* main_plugin = nullptr;
-
-        // TODO: this is just temp
-        bool reload_next_frame = false;
 
     private:
 
@@ -58,13 +59,11 @@ namespace rv {
 
     private:
 
-        RV_API Plugin* register_and_load_plugin(const std::string& name);
+        Plugin* load_plugin(PluginInfo* plugin_info);
 
         RV_API Plugin* get_plugin(const std::string& plugin_class_name);        
 
         PluginInfo* get_plugin_info(const std::string& name);
-
-        Plugin* load_plugin(PluginInfo* plugin_info);
 
         void unload_plugin(
             PluginInfo* plugin_info, 
@@ -72,12 +71,16 @@ namespace rv {
             std::unordered_set<PluginSystemInfo*>& unloaded_systems
         );
 
-        RV_API [[nodiscard]] PluginSystem* create_system(
-            const std::string& type_name,
+        RV_API [[nodiscard]] PluginSystem* create_system_internal(
+            const std::string& class_name,
             std::function<PluginSystem*(const PluginSystemParameters&)> system_constructor
         );
 
     private:
+
+        EntryPointPluginBase* entry_point_plugin = nullptr;
+
+        PluginSystemRef<EntryPointSystem> entry_point_system;
 
          // TODO: This map should be mapped with "non-class" name (like PluginSystemTypeId)
         std::unordered_map<std::string, PluginInfo*> plugin_infos;

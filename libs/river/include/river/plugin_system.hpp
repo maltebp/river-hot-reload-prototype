@@ -55,4 +55,21 @@ namespace rv {
  
     };
 
+    class EntryPointSystem : public PluginSystem {
+    public: 
+
+        using PluginSystem::PluginSystem;
+
+        enum class UpdateReturnCode {
+            Continue,
+            Reload,
+            Shutdown
+        };
+
+    public:
+
+        virtual UpdateReturnCode update() = 0;
+
+    };
+
 }
