@@ -34,11 +34,14 @@
 - **Main Plugin Serialization**
   - *The Problem:*
     The `MainPlugin` needs some kind of serialization, because it creates the first system(s), and these systems are the roots to the dependency tree of systems. This means the plugin must maintain some kind of reference to the system(s), which has to be  maintained on reload.
-  - **Thoughts**
-    - We can avoid implementing and handling serialization of the plugin, by having the Plugin provide a *main* system - one that is constructed automatically by the plugin manager, and which can only be constructed once.
-      - The `MainPlugin` can just provide a method that constructs this system
-      - Then again, the main system differs from other systems, in that it should only be constructed once, and not be exposed as a regular system.
-    - Should we maybe consider a generalization of the hotreload serialization setup?
-    - **Current opinion:** We don't need generalized hotreloading types, and I think we should just expose some kind of serializable main system - preferably something that just uses existing system setups
-      - I started sketching this out
-    - 
+  - **Solution**
+    - We now have an `EntryPointPluginSystem` which is exposed by the `EntryPointPlugin`. This system now contains the update function
+    - We are not serializing the plugin, in order to keep it simple (i.e. only systems are serialized).
+    - No constraints are put on whether the entry point system is initialized more than once - it is just a regular system, which exposes a parameter-less constructor.
+- We opt for providing static assertion for `PluginSystemRef` instead of allowing forward-declaration (static assertions require classes to be defined, and not just declared)
+
+  - I cannot come up with a way to allow for both.
+  - As long as the systems provide rather simple APIs then I don't think it should be a big deal to no have forward declaration.
+
+    - Changes to the `.hpp` file will cause recompile of all transient dependencies (e.g. when hot-reloading)
+  - 

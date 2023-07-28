@@ -3,7 +3,7 @@
 #include <river/plugin_system.hpp>
 #include <river/plugin_system_ref.hpp>
 
-#include <game/plugin_a/system_1.hpp>
+namespace game::plugin_a { class System1; }
 
 namespace game::engine {
 

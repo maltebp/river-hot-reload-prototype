@@ -32,7 +32,8 @@ namespace rv {
 
         template<class S, typename... Args>
         PluginSystemRef<S> create_system(Args... args) {
-             S* system = (S*)this->create_system_internal(
+            static_assert(std::is_base_of<PluginSystem, S>::value);
+            S* system = (S*)this->create_system_internal(
                 typeid(S).name(), 
 
                 // Passing this "construction lambda" to allow for

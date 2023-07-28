@@ -6,6 +6,7 @@
 #include <river/plugin_manager.hpp>
 #include <river/plugin_system_type.hpp>
 #include <river/plugin_system_ref.hpp>
+#include <river/plugin_system_ref_utility.hpp>
 
 namespace rv {
 
@@ -102,7 +103,9 @@ namespace rv {
     public:
 
         virtual PluginSystemRef<EntryPointSystem> create_entry_point_system() override {
-            return this->manager->create_system<S>();
+            return PluginSystemRefUtility::up_cast<EntryPointSystem>(
+                this->manager->create_system<S>()
+            );
         }
 
     };
