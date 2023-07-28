@@ -288,6 +288,7 @@ void PluginManager::unload_plugin(
         system_info->serialized_system = system_info->system->serialize();
         // TODO: Will deleting base class also delete the inheriting class?
         delete system_info->system;
+        system_info->system = nullptr;
     }
 
     for( PluginSystemType* exposed_system : plugin_info->plugin->exposed_system_types ) {
