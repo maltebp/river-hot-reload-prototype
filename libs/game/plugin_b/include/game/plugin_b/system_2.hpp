@@ -23,8 +23,7 @@ namespace game::plugin_b {
         GAME_PLUGIN_B_API int get_hello_count() const;
 
     protected:
-
-        // TODO: Why is this necessary, when it is not necessary in plugin_a::System1?
+    
         void serialize(rv::SerializedObject* object_to_serialize_to) const override;
 
     private:

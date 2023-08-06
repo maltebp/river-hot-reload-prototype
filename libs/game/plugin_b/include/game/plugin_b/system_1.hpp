@@ -24,7 +24,6 @@ namespace game::plugin_b {
 
     protected:
 
-        // TODO: Why is this necessary, when it is not necessary in plugin_a::System1?
         void serialize(rv::SerializedObject* object_to_serialize_to) const override;
 
     private:
