@@ -1,7 +1,7 @@
-#include <game/engine/entry_point.hpp>
-
-#include <game/plugin_a/plugin.hpp>
+#include <river/plugin_manager.hpp>
 #include <game/plugin_a/system_1.hpp>
+
+#include <game/engine/entry_point.hpp>
 
 using namespace game::engine;
 
@@ -23,7 +23,6 @@ rv::EntryPointSystem::UpdateReturnCode EntryPoint::update() {
     std::getline(std::cin, input);
 
     if( input == "hello" ) {
-        this->manager->get_plugin<game::plugin_a::Plugin>()->hello();
         system_1.get_system()->hello();
         return rv::EntryPointSystem::UpdateReturnCode::Continue;
     }

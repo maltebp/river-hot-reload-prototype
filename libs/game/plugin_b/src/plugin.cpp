@@ -1,28 +1,23 @@
 #include <iostream>
 
+#include <river/plugin.hpp>
 #include <river/hello.hpp>
 
-#include <game/plugin_b/plugin.hpp>
 #include <game/plugin_b/system_1.hpp>
 #include <game/plugin_b/system_2.hpp>
 
 using namespace game::plugin_b;
 
 
-void Plugin::hello() {
-    rv::hello("Plugin B 2");
-}
-
-Plugin* plugin;
+rv::Plugin* plugin = nullptr;
 
 extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
     rv::PluginManager* manager, 
     rv::Plugin** dependencies, 
     int dependencies_count
 ) {
-    plugin = new Plugin(
+    plugin = new rv::Plugin(
         manager,
-        typeid(Plugin).name(),
         "game.plugin_b",
         std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
     );
@@ -32,7 +27,7 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
 
     // TODO: Ensure that passed dependencies match expected
 
-    return (rv::Plugin*)plugin;
+    return plugin;
 }
 
 extern "C" __declspec(dllexport) void plugin_stop() {

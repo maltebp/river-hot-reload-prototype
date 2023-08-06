@@ -20,11 +20,10 @@ namespace rv {
 
         Plugin(
             PluginManager* manager, 
-            std::string class_name, 
             std::string name, 
             std::vector<Plugin*> dependencies
         )
-            :   Plugin(manager, class_name, name, dependencies, false)
+            :   Plugin(manager, name, dependencies, false)
         { }
 
         template <class S>
@@ -50,8 +49,6 @@ namespace rv {
             
         PluginManager* const manager; 
 
-        const std::string class_name;
-
         const std::string name;
 
         const std::vector<Plugin*> dependencies; 
@@ -64,13 +61,11 @@ namespace rv {
 
         Plugin(
             PluginManager* manager, 
-            std::string class_name,
             std::string name, 
             std::vector<Plugin*> dependencies,
             bool is_entry_point
         ) 
             :   manager(manager),
-                class_name(class_name),
                 name(name),
                 dependencies(dependencies),
                 is_entry_point(is_entry_point)
@@ -83,11 +78,10 @@ namespace rv {
 
         EntryPointPluginBase(
             PluginManager* manager, 
-            std::string class_name,
             std::string name, 
             std::vector<Plugin*> dependencies
         )
-            :   Plugin(manager, class_name, name, dependencies, true)
+            :   Plugin(manager, name, dependencies, true)
         { }
 
         virtual PluginSystemRef<EntryPointSystem> create_entry_point_system() = 0;

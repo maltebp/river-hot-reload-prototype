@@ -1,20 +1,20 @@
-#include <game/engine/plugin.hpp>
-
+#include <river/plugin.hpp>
 #include <river/plugin_manager.hpp>
+
+#include <game/engine/entry_point.hpp>
 
 using namespace game;
 using namespace game::engine;
 
-Plugin* plugin;
+rv::EntryPointPlugin<EntryPoint>* plugin;
 
 extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
     rv::PluginManager* manager, 
     rv::Plugin** dependencies, 
     int dependencies_count
 ) {
-    plugin = new Plugin(
+    plugin = new rv::EntryPointPlugin<EntryPoint>(
         manager,
-        typeid(Plugin).name(),
         "game.engine",
         std::vector<rv::Plugin*>(dependencies, dependencies + dependencies_count)
     );
@@ -23,7 +23,6 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
 
     // TODO: Ensure that passed dependencies match expected
 
-    // TODO: Test if this works, or if it has to be cast to rv::MainPlugin
     return (rv::Plugin*)plugin;
 }
 

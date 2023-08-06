@@ -25,11 +25,6 @@ namespace rv {
 
         RV_API void load_plugin(const std::string& name);
 
-        template<typename P>
-        P* get_plugin() {
-            return (P*)get_plugin(typeid(P).name());
-        }
-
         template<class S, typename... Args>
         PluginSystemRef<S> create_system(Args... args) {
             static_assert(std::is_base_of<PluginSystem, S>::value);
@@ -61,8 +56,6 @@ namespace rv {
     private:
 
         Plugin* load_plugin(PluginInfo* plugin_info);
-
-        RV_API Plugin* get_plugin(const std::string& plugin_class_name);        
 
         PluginInfo* get_plugin_info(const std::string& name);
 

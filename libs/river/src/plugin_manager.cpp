@@ -164,16 +164,6 @@ void PluginManager::reload_changed_plugins() {
     }
 }
 
-Plugin* PluginManager::get_plugin(const std::string& plugin_class_name) {
-    for( const auto [name, plugin_info]  : this->plugin_infos ) {
-        if( plugin_info->plugin == nullptr ) continue;
-        if( plugin_info->plugin->class_name == plugin_class_name) continue;
-        return plugin_info->plugin; 
-    }
-    assert(false);
-    return nullptr;
-}
-
 
 PluginManager::PluginInfo* PluginManager::get_plugin_info(const std::string& dll_name) {
     auto it = this->plugin_infos.find(dll_name);
