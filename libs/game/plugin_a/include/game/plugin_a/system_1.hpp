@@ -7,7 +7,10 @@
 
 class rv::SerializedObject;
 
-namespace game::plugin_b { class System1; }
+namespace game::plugin_b { 
+    class System1;
+    class System2;
+}
 
 namespace game::plugin_a {
 
@@ -38,6 +41,7 @@ namespace game::plugin_a {
         const int some_id;
 
         const rv::PluginSystemRef<plugin_b::System1> b_system_1;
+        const rv::PluginSystemRef<plugin_b::System2> b_system_2;
 
         int hello_count = 0;
         

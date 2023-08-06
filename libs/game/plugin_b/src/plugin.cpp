@@ -4,6 +4,7 @@
 
 #include <game/plugin_b/plugin.hpp>
 #include <game/plugin_b/system_1.hpp>
+#include <game/plugin_b/system_2.hpp>
 
 using namespace game::plugin_b;
 
@@ -27,6 +28,7 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
     );
 
     plugin->register_system<System1>("System1");
+    plugin->register_system<System2>("System2");
 
     // TODO: Ensure that passed dependencies match expected
 
