@@ -10,8 +10,8 @@ int main(int argc, char** argv) {
 
     // These will eventually be passed via macros
     plugin_manager.register_plugin("game.plugin_b", { });
-    plugin_manager.register_plugin("game.engine", { "game.plugin_a", "game.plugin_b" });
-    plugin_manager.register_plugin("game.plugin_a", { });
+    plugin_manager.register_plugin("game.engine", { "game.plugin_a" });
+    plugin_manager.register_plugin("game.plugin_a", { "game.plugin_b" });
 
     plugin_manager.run_update_loop();
 

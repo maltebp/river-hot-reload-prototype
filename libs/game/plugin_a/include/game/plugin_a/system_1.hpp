@@ -1,10 +1,13 @@
 #pragma once
 
 #include <river/plugin_system.hpp>
+#include <river/plugin_system_ref.hpp>
 
 #include <game/plugin_a/api.hpp>
 
 class rv::SerializedObject;
+
+namespace game::plugin_b { class System1; }
 
 namespace game::plugin_a {
 
@@ -33,6 +36,8 @@ namespace game::plugin_a {
 
         // Just there to test constness when deserializing
         const int some_id;
+
+        const rv::PluginSystemRef<plugin_b::System1> b_system_1;
 
         int hello_count = 0;
         

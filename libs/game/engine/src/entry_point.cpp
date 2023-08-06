@@ -2,7 +2,6 @@
 
 #include <game/plugin_a/plugin.hpp>
 #include <game/plugin_a/system_1.hpp>
-#include <game/plugin_b/plugin.hpp>
 
 using namespace game::engine;
 
@@ -25,7 +24,6 @@ rv::EntryPointSystem::UpdateReturnCode EntryPoint::update() {
 
     if( input == "hello" ) {
         this->manager->get_plugin<game::plugin_a::Plugin>()->hello();
-        this->manager->get_plugin<game::plugin_b::Plugin>()->hello();
         system_1.get_system()->hello();
         return rv::EntryPointSystem::UpdateReturnCode::Continue;
     }

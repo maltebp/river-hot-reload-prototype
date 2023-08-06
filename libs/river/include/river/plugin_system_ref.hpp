@@ -23,7 +23,7 @@ namespace rv {
         PluginSystemRefBase() 
             :   type_id(),
                 manager(nullptr),
-                id(0)
+                id(0) 
         { }
 
         RV_API PluginSystemRefBase(

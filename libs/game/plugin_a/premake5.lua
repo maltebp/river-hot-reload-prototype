@@ -11,10 +11,12 @@ project "game.plugin_a"
 
     includedirs {
         "include",
-        "../../river/include"
+        "../../river/include",
+        "../plugin_b/include"
     }
 
     links "river"
+    links "game.plugin_b"
 
     defines {
         "GAME_PLUGIN_A_API_IMPLMENTATION"

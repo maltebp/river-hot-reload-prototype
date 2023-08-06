@@ -21,7 +21,7 @@ public:
 
     PluginInfo(const std::string& name, const std::vector<std::string>& dependencies) 
         :   name(name),
-            dependencies(dependencies)
+            dependencies(dependencies)  
     { }
 
     const std::string name;
