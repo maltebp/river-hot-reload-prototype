@@ -7,8 +7,6 @@
 
 namespace rv {
 
-    // TODO: Most of this should be encapsulated better
-
     class SerializedElement {
     public:
 
@@ -16,7 +14,6 @@ namespace rv {
 
     public:
 
-        // TODO: Maybe this should be type_id instead
         std::string type_name;
         
     };

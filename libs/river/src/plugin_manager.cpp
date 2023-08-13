@@ -134,9 +134,7 @@ void PluginManager::reload_changed_plugins() {
     
     for( auto [name, plugin_info] : this->plugin_infos ) {
     
-        // TODO: Uncomment this after testing
-        //bool plugin_is_changed = std::filesystem::exists(name + ".dll");
-        bool plugin_is_changed = true;
+        bool plugin_is_changed = std::filesystem::exists(name + ".dll");
         if( plugin_is_changed ) {
             std::cout << "  Plugin " << name << ": has changed" << std::endl;
             this->unload_plugin(plugin_info, unloaded_plugins, unloaded_systems);
@@ -275,8 +273,9 @@ void PluginManager::unload_plugin(
 
     for( PluginSystemInfo* system_info : plugin_info->systems ) {
         unloaded_systems.insert(system_info);
-        system_info->serialized_system = system_info->system->serialize();
-        // TODO: Will deleting base class also delete the inheriting class?
+
+        system_info->serialized_system = new SerializedObject();
+        system_info->system->serialize(system_info->serialized_system);
         delete system_info->system;
         system_info->system = nullptr;
     }

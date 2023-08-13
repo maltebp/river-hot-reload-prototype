@@ -59,4 +59,13 @@
         https://stackoverflow.com/questions/4031249/dll-memory-management
     - Result: after having a break from it all, there seems to be no problem with the original problem - I must just have missed something somewhere.
 
-- 
+- **I removed derived classes of `Plugin` that were local to each plugin project**
+  None of the derivations provided any extensions, so there was no need for each plugin project to provide a separate plugin class.
+  - *Referencing plugin using type-system:*
+    One use-case of the plugin class was to be able to reference the plugin using the *type system*, but I don't see that we'll ever need this, as all code that has to reference a plugin (and not just a system from the plugin) is auto-generated code.
+- **Removing Plugin class**
+  - All we need when starting a plugin is:
+    - Type info regarding exposed systems (constructors, class names)
+    - Whether it is the entry point
+    - A constructor for the entry point system
+  - 

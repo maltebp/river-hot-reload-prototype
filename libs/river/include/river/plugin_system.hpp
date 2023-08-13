@@ -32,14 +32,7 @@ namespace rv {
             assert(manager != nullptr);
         }
 
-        SerializedObject* serialize() const {
-            // TODO: Consider removing this serialized data (its never really used, and not really needed)
-            SerializedObject* serialized_object = new SerializedObject();
-            serialized_object->properties["type_id"] = this->type_id.serialize();
-            serialized_object->properties["id"] = new SerializedInt(id);
-            serialize(serialized_object);
-            return serialized_object;
-        }
+        virtual void serialize(SerializedObject* object_to_serialize_to) const = 0;
 
     public:
 
@@ -48,10 +41,6 @@ namespace rv {
         const PluginSystemId id;
 
         PluginManager* const manager;
-
-    protected:
-
-        virtual void serialize(SerializedObject* object_to_serialize_to) const = 0;
  
     };
 
