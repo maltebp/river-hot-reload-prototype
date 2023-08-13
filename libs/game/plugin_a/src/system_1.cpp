@@ -6,6 +6,7 @@
 #include <river/plugin_manager.hpp>
 
 #include <game/plugin_b/system_1.hpp>
+#include <game/plugin_b/system_2.hpp>
 
 using namespace game::plugin_a;
 
