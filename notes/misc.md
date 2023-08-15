@@ -88,8 +88,6 @@
 
 
 
-
-
 - How to do serialization?
   - We probably need some kind of reflection library
 - What to do if a system fails? Crash entire editor?
@@ -97,7 +95,40 @@
 
 
 
-### Scenarios
+**A serious issue**
+
+[!] If you add a new "component" C to a system (or anything that has to be hotreloadable), where C depends on injected dependencies and you hot-reload that system, then C will not have any serialized data, and so its initial injected dependencies will never have been set.
+
+- If you could set the reference "statically" then it would not be a problem (i.e. stating that Component C1 references Component C2)
+- One could store the construction of the object within a lambda, where arguments can be stored as well.
+  - This means the entity can be reconstructed (with a new constructor), and any new components would constructed properly
+  - Arguments would have to be copied by value, because it's not sure the code calling the construction exists when it is to be reconstructed
+  - [!] The lambda cannot contain the constructor, because the constructor is also reloaded
+    - One impractical solution, would be for the plugin to expose the constructor of the entity as a regular function that doesn't rely on the entity type itself. Within the plugin this function just calls the constructor of the entity
+- **Solution idea [WIP]**:
+  - Wrap the construction of the object (entity/system) in a custom "lambda"-ish object, which stores the construction arguments
+  - The plugin defining the type exposes the constructors of the type, allowing the lambda-object to lookup an appropriate constructor.
+    - The constructors can be exposed with a list of arguments and a pointer to an intermediary function (within the plugin) that constructs the object.
+  - With this system, deserialization via deconstructor is no longer necessary (for hot-reloading) - all things that are `const` within the object should be initialized through the constructor, so anything that makes sense to deserialize should be non-`const` and thus be possible to apply via a method.
+  - 
+
+
+
+### Entity system
+
+- When an entity type changes, we have to reload all entities of said type
+- Entities must be tied to a particular plugin, if we want to know when an entity type has changed
+- Of course, this is the case for both entity types and components
+- We don't have to worry about cross-entity references, because they are indirect references anyway
+- Components in a component set are not named, so how can serialization know which component data belonged to?
+  - Take the name of the component set, name of the component type and an index?
+    - That's not flexible towards re-arranging the components
+  - We redesign the entity system, so that components sets are defined so that we have a variable for each component of the set.
+  
+
+
+
+## Scenarios
 
 1. **Character controller**
    I'm creating the controller logic for the main player character. This involves tweaking the speed of the character, what should happen when certain buttons are pressed, and how the camera should follow the player. 
@@ -122,3 +153,41 @@
    - *Desired work flow*:
      - No code, except for the core entity, needs to know about the template. The should get this exposed indirectly.
      - The system needs to know about the 
+
+
+
+
+
+
+
+## Conceptual entity setup
+
+If we are not considering C++, then the entity system should do something like this.
+
+- One could imagine this being some kind of "scripting" language used to define entity types with.
+
+
+
+```
+EntityA
+
+	Parameters {
+		Transform parent_transform;
+		float damage;
+	}
+	
+    ComponentSet {
+    	Transform transform;
+    	Model model { transform }
+    }
+    
+    ComponentSet {
+    	Gun gun { transform, damage };
+    }
+    
+    ComponentSet {
+        Transform emitter_transforms { transform };
+		ParticleEmitter emitter1 { emitter_transform };
+		ParticleEmitter emitter2 { emitter_transform };
+    }
+```

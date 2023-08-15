@@ -4,6 +4,40 @@
 
 
 
+2 key goals:
+
+1. Be able to change logic within code and see changes in-game near instantly
+2. Be able to compose entities from within code and see changes in-game near instantly
+   - Just like you would when composing entities within an editor, only this should work within code.
+3. 
+
+
+
+Desired features:
+
+1. Change body of a function
+2. Change signature of a function (and, of course, change the calling functions as well - see 2)
+3. Change non-injected members and layout of a system (i.e. not changing the signature of the constructor)
+4. Change non-injected components and layout of an entity
+
+
+
+Non-desired features:
+
+- Change layout and members of a component
+  - Considering a component is meant to be an isolated unit, it doesn't make sense to change the layout and members, because most of the parameters should be passed by the constructor.
+
+
+
+Key challenges:
+
+- A new component in an entity may rely on an argument that was to the entity itself on construction, meaning the entity has to be reconstructed with the same parameters for them to be passed to the new component.
+  - Note: it may be that the parameter is not saved as a member on the entity, meaning it only exists within the construction phase
+
+
+
+### Old
+
 I want to do a prototype of *most* of hot-reloading for most of the game components. It should work like following:
 
 
