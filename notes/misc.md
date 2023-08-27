@@ -125,6 +125,14 @@
     - That's not flexible towards re-arranging the components
   - We redesign the entity system, so that components sets are defined so that we have a variable for each component of the set.
   
+- Component sets are not explicit classes within the game object
+  - We need a name for each component for serialization purposes
+  - It's simpler from a user perspective
+  - It requires extra storage, but that storage shouldn't interfere with performance (it's stored in the game object, not the component set)
+  - Setting group of a component using `register<X, ComponentA>` where `X` is the group number is not really a problem.
+    - It doesn't matter if group numbers are consecutive - we'll automatically remove holes
+    - It's an easy enough to distinguish which components are in a certain group
+
 
 
 
@@ -191,3 +199,4 @@ EntityA
 		ParticleEmitter emitter2 { emitter_transform };
     }
 ```
+

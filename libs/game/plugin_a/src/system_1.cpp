@@ -8,6 +8,8 @@
 #include <game/plugin_b/system_1.hpp>
 #include <game/plugin_b/system_2.hpp>
 
+#include <game/plugin_a/game_objects.hpp>
+
 using namespace game::plugin_a;
 
 System1::System1(
@@ -32,6 +34,16 @@ System1::System1(
 { }
 
 void System1::hello() {
+
+    std::cout << "Constructing game objects" << std::endl;
+    {
+        rv::GameObjectContext context;
+        GameObjectA1* game_object = context.create_game_object<GameObjectA1>();
+        std::cout << "GameObjectA1.value = " << game_object->a1.value << std::endl;
+        std::cout << "GameObjectA2.value = " << game_object->a2.value << std::endl;
+        std::cout << "GameObjectA2.a1.value = " << game_object->a2.a1.value << std::endl;
+    }
+
     this->hello_count++;
     std::cout << "Hello from PluginA's system 1 (id = " << some_id << ", count = " << this->hello_count << ")" << std::endl;    
     this->b_system_1.get_system()->hello(); 
