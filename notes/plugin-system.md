@@ -8,7 +8,7 @@
 
 - **Construction capture**
   Construction of objects (game objects and systems) are done within a lambda that capture the constructor parameters. This allow us to re-construct the object after hot-reloading with the same parameters.
-  - This will be expensive in terms of memory, but I think it's worth it.
+  - This will be expensive in terms of memory, but I think it's worth it when developing
   - This allows us to add new members to a class where the member is depending on a parameter that only exists at construction time. 
     - By extension, this allows us to add new components to entities while hotreloading
   - It should be turned off for standalone builds (i.e. when disabling hot-reloading)

@@ -133,6 +133,10 @@
     - It doesn't matter if group numbers are consecutive - we'll automatically remove holes
     - It's an easy enough to distinguish which components are in a certain group
 
+#### Hot-reloading entities
+
+- 
+
 
 
 
