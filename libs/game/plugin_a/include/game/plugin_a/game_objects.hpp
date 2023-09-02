@@ -35,11 +35,15 @@ namespace game::plugin_a {
     class GameObjectA1 : public rv::GameObject {
     public:
 
-        using rv::GameObject::GameObject;
+        GameObjectA1(const rv::GameObjectArgs& args, int number) 
+            :   GameObject(args),
+                a1(add_component<ComponentA1>(0, number)),
+                a2(add_component<ComponentA2>(0, number*2, a1))
+        { }
 
-        ComponentA1& a1 = add_component<ComponentA1>(0, 1337);
+        ComponentA1& a1;
 
-        ComponentA2& a2 = add_component<ComponentA2>(0, 500, a1);
+        ComponentA2& a2;
 
     };
 

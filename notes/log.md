@@ -79,7 +79,7 @@
 
 - **[!] Next up: implement hot reloading in the entity system**
 
+    - [?] Do components need to be registered as well?
 
-  - 
 
   

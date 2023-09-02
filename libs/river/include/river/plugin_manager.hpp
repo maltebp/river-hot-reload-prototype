@@ -8,6 +8,7 @@
 #include <river/core.hpp>
 #include <river/plugin_system.hpp>
 #include <river/plugin_system_ref.hpp>
+#include <river/game_object_type_info.hpp>
 
 namespace rv {
 
@@ -41,10 +42,14 @@ namespace rv {
             PluginSystemRef<S> system_ref = system;
             
             return system_ref;
-        }
+        };
 
         RV_API [[nodiscard]] PluginSystem* get_system(
             const PluginSystemTypeId& type_id, PluginSystemId id) const;
+
+        GameObjectTypeInfo get_game_object_type_info(const std::string& type_name) const;
+
+        std::string get_game_object_type_name(const std::string& real_name) const;
 
         RV_API void reload_changed_plugins();
 

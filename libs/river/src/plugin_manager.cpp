@@ -350,3 +350,28 @@ PluginSystem* PluginManager::get_system(const PluginSystemTypeId& type_id, Plugi
 
     return plugin_system_info->system;            
 }
+
+
+GameObjectTypeInfo PluginManager::get_game_object_type_info(const std::string& type_name) const {
+    for(auto& [plugin_name, plugin_info] : this->plugin_infos ) {
+        assert(plugin_info->plugin != nullptr);
+        
+        if( plugin_info->plugin->game_object_types.contains(type_name) ) {
+            return plugin_info->plugin->game_object_types[type_name];
+        }
+    }
+
+    assert(false);
+}
+
+std::string PluginManager::get_game_object_type_name(const std::string& real_name) const {
+    for(auto& [plugin_name, plugin_info] : this->plugin_infos ) {
+        assert(plugin_info->plugin != nullptr);
+
+        for( auto& [type_name, type_info] : plugin_info->plugin->game_object_types ) {
+            if( type_info.real_name == real_name) return type_name;
+        }
+    }
+
+    assert(false);
+}

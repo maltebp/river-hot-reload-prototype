@@ -37,8 +37,8 @@ void System1::hello() {
 
     std::cout << "Constructing game objects" << std::endl;
     {
-        rv::GameObjectContext context;
-        GameObjectA1* game_object = context.create_game_object<GameObjectA1>();
+        rv::GameObjectContext context{*this->manager};
+        GameObjectA1* game_object = context.create_game_object<GameObjectA1>(42);
         std::cout << "GameObjectA1.value = " << game_object->a1.value << std::endl;
         std::cout << "GameObjectA2.value = " << game_object->a2.value << std::endl;
         std::cout << "GameObjectA2.a1.value = " << game_object->a2.a1.value << std::endl;

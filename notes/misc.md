@@ -135,6 +135,8 @@
 
 #### Hot-reloading entities
 
+- System must expose lookup of game object name to function that constructs
+  - Bonus: the lookup should check that parameters match
 - 
 
 

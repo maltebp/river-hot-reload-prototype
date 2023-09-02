@@ -18,6 +18,8 @@ namespace rv {
 
         GameObjectContext& context;
 
+        // TODO: Add virtual constructor
+
     protected:
 
         template<typename TComponent, typename ... TArgs>

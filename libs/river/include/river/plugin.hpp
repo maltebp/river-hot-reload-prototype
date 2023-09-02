@@ -7,6 +7,7 @@
 #include <river/plugin_system_type.hpp>
 #include <river/plugin_system_ref.hpp>
 #include <river/plugin_system_ref_utility.hpp>
+#include <river/game_object_type_info.hpp>
 
 namespace rv {
 
@@ -45,6 +46,12 @@ namespace rv {
             );
         }
 
+        template<class TGameObject>
+        void register_game_object_type(const std::string& entity_name, void* constructor) {
+            // It should be possible to have more than one constructor
+            game_object_types[entity_name] = GameObjectTypeInfo{entity_name, typeid(TGameObject).name(), constructor};
+        }
+
     public:
             
         PluginManager* const manager; 
@@ -56,6 +63,8 @@ namespace rv {
         const bool is_entry_point = true;
 
         std::vector<PluginSystemType*> exposed_system_types;
+
+        std::unordered_map<std::string, GameObjectTypeInfo> game_object_types;
 
     protected:
 
