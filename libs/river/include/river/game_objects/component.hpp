@@ -18,6 +18,10 @@ namespace rv {
     class Component {
     public:
 
+        // virtual SerializedObject* serialize() const = 0;
+
+        // virtual void deserialize(const SerializedObject* serialized_object) = 0;
+
         const ComponentId id;
 
         // All these members are meant to be contained within the component group

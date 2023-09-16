@@ -362,16 +362,18 @@ GameObjectTypeInfo PluginManager::get_game_object_type_info(const std::string& t
     }
 
     assert(false);
+    return GameObjectTypeInfo{};
 }
 
-std::string PluginManager::get_game_object_type_name(const std::string& real_name) const {
+std::string PluginManager::get_game_object_type_name(const std::string& typeid_name) const {
     for(auto& [plugin_name, plugin_info] : this->plugin_infos ) {
         assert(plugin_info->plugin != nullptr);
 
         for( auto& [type_name, type_info] : plugin_info->plugin->game_object_types ) {
-            if( type_info.real_name == real_name) return type_name;
+            if( type_info.typeid_name == typeid_name) return type_name;
         }
     }
 
     assert(false);
+    return std::string{};
 }

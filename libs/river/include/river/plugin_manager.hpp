@@ -16,6 +16,7 @@ namespace rv {
     class PluginSystem;
     class EntryPointPluginBase;
     class EntryPointSystem;
+    class GameObjectContext;
 
     class PluginManager {
     public:

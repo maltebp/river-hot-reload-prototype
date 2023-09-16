@@ -13,11 +13,11 @@ struct GameObjectContext::GameObjectInfo {
     GameObjectContext::CreateFunction create_function;
 };
 
-GameObject* GameObjectContext::create_game_object(const std::string& real_name, CreateFunction create_function) {
+GameObject* GameObjectContext::create_game_object(const std::string& typeid_name, CreateFunction create_function) {
     this->next_game_object_id++;
     GameObjectId id = this->next_game_object_id;
 
-    std::string type_name = plugin_manager.get_game_object_type_name(real_name);
+    std::string type_name = plugin_manager.get_game_object_type_name(typeid_name);
     GameObjectTypeInfo type_info = plugin_manager.get_game_object_type_info(type_name);
 
     GameObjectArgs base_args{*this, id};

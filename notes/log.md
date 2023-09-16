@@ -74,12 +74,36 @@
 - **Setup non-reloadable version of the game object system**
 
 
-  - All the code is a barebones prototype version.
-  - Component set are only implemented in the API, but not internally - components are just heap allocated in isolation.
+    - All the code is a barebones prototype version.
 
-- **[!] Next up: implement hot reloading in the entity system**
 
+    - Component set are only implemented in the API, but not internally - components are just heap allocated in isolation.
+
+
+
+- **WIP: implement hot reloading in the entity system**
+
+    - I setup construction using lambdas and deferred construction, but with support for only 1 constructor.
+    - *A problem:*
+        Lambda construction will not work, because what happens if the types that the lambda has captured are also reloaded? Game objects are fine, because we reference them by handle anyway, but what about other structures that may have been exposed by a library?
+    
+        - *Solution*: In essence, the lambda must be serializable, meaning all passed arguments must also be serializable.
+    
+            - I'm worried that this seems like a tall order
+            - In case a system wants to handle construction of the object (e.g. because it wants to handle memory management like game objects) the object should have been passed by a handle.
+    
+    - Multiple constructors serialization:
+    
+        - [!] I postponed working on this until after I got hot reloading with single constructor working.
+        - DLL 1 that calls a constructor of game object A has a dependency on A and all of the constructor arguments. The DLL 2 containing A *also* dependencies on all the arguments. This means that 1 and 2 must in sync with regards to the type info of the arguments.
+    
+            - I'm not entirely sure about this, and it may need some more experimentation across compilers.
+    
+        - Because of the above, it should be possible to find the constructor via reflection by using the `typeid` names of the arguments.
+        - 
+    
     - [?] Do components need to be registered as well?
+    
 
 
-  
+

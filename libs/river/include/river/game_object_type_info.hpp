@@ -6,7 +6,7 @@ namespace rv {
 
     struct GameObjectTypeInfo {
         std::string name;
-        std::string real_name;
+        std::string typeid_name;
         void* constructor;
     };
 

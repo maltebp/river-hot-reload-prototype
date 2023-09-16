@@ -33,10 +33,10 @@ namespace rv {
                 return (GameObject*)typed_constructor_proxy(base_args, args...);
             };
 
-            std::string real_name = typeid(TGameObject).name();
+            std::string typeid_name = typeid(TGameObject).name();
 
             // TODO: Test if a dynamic cast works here
-            TGameObject* game_object = (TGameObject*)create_game_object(real_name, create_function);
+            TGameObject* game_object = (TGameObject*)create_game_object(typeid_name, create_function);
 
             return game_object;
         }
@@ -45,7 +45,7 @@ namespace rv {
 
     private:
 
-        RV_API GameObject* create_game_object(const std::string& real_name, CreateFunction create_function);
+        RV_API GameObject* create_game_object(const std::string& typeid_name, CreateFunction create_function);
 
         RV_API ComponentId generate_component_id();
 
