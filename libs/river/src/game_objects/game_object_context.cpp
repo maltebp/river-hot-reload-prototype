@@ -8,12 +8,12 @@
 using namespace rv;
 
 struct GameObjectContext::GameObjectInfo {
-    std::string name;
+    std::string type_name;
     GameObject* game_object;
-    GameObjectContext::CreateFunction create_function;
+    const SerializedList* serialized_args;
 };
 
-GameObject* GameObjectContext::create_game_object(const std::string& typeid_name, CreateFunction create_function) {
+GameObject* GameObjectContext::create_game_object(const std::string& typeid_name, const SerializedList* serialized_args) {
     this->next_game_object_id++;
     GameObjectId id = this->next_game_object_id;
 
@@ -21,10 +21,10 @@ GameObject* GameObjectContext::create_game_object(const std::string& typeid_name
     GameObjectTypeInfo type_info = plugin_manager.get_game_object_type_info(type_name);
 
     GameObjectArgs base_args{*this, id};
-    GameObject* game_object = create_function(type_info.constructor, &base_args);
+    GameObject* game_object = type_info.constructor_proxy(&base_args, serialized_args);
     GameObjectInfo* game_object_info = new GameObjectInfo();
-    game_object_info->name = type_name;
-    game_object_info->create_function = create_function;
+    game_object_info->type_name = type_name;
+    game_object_info->serialized_args = serialized_args;
     game_object_info->game_object = game_object;
 
     game_objects[id] = game_object_info;

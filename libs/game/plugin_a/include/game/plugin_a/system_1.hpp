@@ -45,6 +45,6 @@ namespace game::plugin_a {
 
         int hello_count = 0;
         
-    };
+    };   
 
 }

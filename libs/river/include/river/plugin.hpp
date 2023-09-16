@@ -47,9 +47,15 @@ namespace rv {
         }
 
         template<class TGameObject>
-        void register_game_object_type(const std::string& entity_name, void* constructor) {
-            // It should be possible to have more than one constructor
-            game_object_types[entity_name] = GameObjectTypeInfo{entity_name, typeid(TGameObject).name(), constructor};
+        void register_game_object_type(
+            const std::string& entity_name, GameObjectConstructorProxy constructor
+        ) {    
+            // TODO: It should be possible to have more than one constructor
+            game_object_types[entity_name] = GameObjectTypeInfo{
+                entity_name, 
+                typeid(TGameObject).name(), 
+                constructor
+            };
         }
 
     public:

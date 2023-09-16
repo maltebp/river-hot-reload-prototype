@@ -87,10 +87,11 @@
     - *A problem:*
         Lambda construction will not work, because what happens if the types that the lambda has captured are also reloaded? Game objects are fine, because we reference them by handle anyway, but what about other structures that may have been exposed by a library?
     
-        - *Solution*: In essence, the lambda must be serializable, meaning all passed arguments must also be serializable.
+        - *First idea:* Serialize the lambda (with own lambda type), meaning all passed arguments must also be serializable. Then deserialize it after reload.
     
-            - I'm worried that this seems like a tall order
             - In case a system wants to handle construction of the object (e.g. because it wants to handle memory management like game objects) the object should have been passed by a handle.
+            - Problem: This requires some kind of dynamic dispatching (i.e. calling a function without having the actual type of the function). What do you deserialize the lambda to?
+        - *Solution:* Instead of passing all the typed arguments, we serialize the arguments immediately, which we then store, and then we pass those arguments to the constructor proxy, which then deserialize it.
     
     - Multiple constructors serialization:
     

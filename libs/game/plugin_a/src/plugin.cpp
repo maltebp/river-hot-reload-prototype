@@ -2,6 +2,8 @@
 
 #include <river/plugin.hpp>
 #include <river/plugin_system.hpp>
+#include <river/serialization.hpp>
+#include <river/serializers.hpp>
 #include <river/hello.hpp>
 
 #include <game/plugin_a/system_1.hpp>
@@ -12,8 +14,13 @@ using namespace game::plugin_a;
 
 rv::Plugin* plugin;
 
-GameObjectA1* GameObjectA1_constructor1(const rv::GameObjectArgs* args, int number) {
-    return new GameObjectA1(*args, number);
+rv::GameObject* GameObjectA1_constructor_1(const rv::GameObjectArgs* base_args, const rv::SerializedList* serialized_args) {
+    GameObjectA1* game_object = new GameObjectA1(
+        *base_args,
+        deserialize<int>(serialized_args->elements[0])
+    );
+    
+    return static_cast<GameObjectA1*>(game_object);
 }
 
 extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
@@ -29,7 +36,7 @@ extern "C" __declspec(dllexport) rv::Plugin* plugin_start(
 
     plugin->register_system<System1>("System1");
 
-    plugin->register_game_object_type<GameObjectA1>("game::plugin_a::GameObjectA1", &GameObjectA1_constructor1);
+    plugin->register_game_object_type<GameObjectA1>("game::plugin_a::GameObjectA1", &GameObjectA1_constructor_1);
 
     // TODO: Ensure that passed dependencies match expected
 
