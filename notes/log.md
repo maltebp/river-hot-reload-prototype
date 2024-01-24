@@ -86,25 +86,63 @@
     - I setup construction using lambdas and deferred construction, but with support for only 1 constructor.
     - *A problem:*
         Lambda construction will not work, because what happens if the types that the lambda has captured are also reloaded? Game objects are fine, because we reference them by handle anyway, but what about other structures that may have been exposed by a library?
-    
+
         - *First idea:* Serialize the lambda (with own lambda type), meaning all passed arguments must also be serializable. Then deserialize it after reload.
-    
+
             - In case a system wants to handle construction of the object (e.g. because it wants to handle memory management like game objects) the object should have been passed by a handle.
             - Problem: This requires some kind of dynamic dispatching (i.e. calling a function without having the actual type of the function). What do you deserialize the lambda to?
         - *Solution:* Instead of passing all the typed arguments, we serialize the arguments immediately, which we then store, and then we pass those arguments to the constructor proxy, which then deserialize it.
-    
     - Multiple constructors serialization:
-    
+
         - [!] I postponed working on this until after I got hot reloading with single constructor working.
         - DLL 1 that calls a constructor of game object A has a dependency on A and all of the constructor arguments. The DLL 2 containing A *also* dependencies on all the arguments. This means that 1 and 2 must in sync with regards to the type info of the arguments.
-    
+
             - I'm not entirely sure about this, and it may need some more experimentation across compilers.
-    
+
         - Because of the above, it should be possible to find the constructor via reflection by using the `typeid` names of the arguments.
-        - 
-    
+    - Fixing bug:
+        Reloading the plugins (if there are changes) crashes, because the game object context is destroyed, but not de-registered properly.
+        - The fact that the game object context is destroyed is a problem, because the `PluginManager` reloads the plugin.
+        - But the game objects are unloaded by the `PluginManager`, and the "reload" state is stored within the context, so maybe it doesn't make sense that you can create these game object contexts arbitrarily.
+        - Options:
+            - Serialize the entire game object context. The only additional data is the meta data of the game objects
+
+
     - [?] Do components need to be registered as well?
-    
+
+- **Polymorphic dependencies**
+
+    - This can become a bit tricky
+    - 3 plugins: A, B, C and D
+        - A contains base interface `IBase`
+        - B contains implementing class `Impl`
+        - C uses base interface `IBase` for something (i.e. it doesn't care about implementation)
+        - D constructs `Impl` and passes it to `C`
+
+    - Problem: changes are made to plugin B, meaning all instances of `Impl` must be reloaded, but there is no plugin dependency between B and C (who uses `Impl` without knowing it).
+    - Solution: stable handles / identifiers
+        - If system C is only referencing the object by handle, then it will not even notice that the object is being reloaded.
+
+- **Handles**
+
+    - Should contain:
+        - Some ID (the handle) that you can lookup
+        - ...
+
+    - Looking up the value
+        - Who owns the mapping?
+          - We could have different handle types for different systems, so they can decide themselves how to do the lookup.
+        - Is it possible to do a general purpose solution?
+          - A system can request some handle storage from a central handle manager, and the system can allocate the handles
+          - All handles then refer directly to the handle storage - the handle is typed, so it handles the pointer
+          - De-referencing the handle would then be:
+            1. Access the handle manager
+            2. Find the pool to which the handle belongs
+        - [!] Why would we need a general purpose solution?
+          - If we simply provide some general templated handle class then it's simply up to the systems to decide how to point the handles to their allocated objects
+          - What if you want to allocate an arbitrary object?
+          - What if you don't know where the handle might come from (i.e. polymorphism)?
+
 
 
 

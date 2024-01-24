@@ -21,7 +21,7 @@ namespace rv {
 
         using CreateFunction = std::function<GameObject*(void*, const GameObjectArgs*)>;
 
-        GameObjectContext(PluginManager& plugin_manager) : plugin_manager(plugin_manager) { }
+        RV_API GameObjectContext(PluginManager& plugin_manager);
 
         template<typename TGameObject, typename ... TArgs>
         TGameObject* create_game_object(TArgs... args) {
@@ -42,6 +42,17 @@ namespace rv {
             return game_object;
         }
 
+        template<typename TGameObject>
+        TGameObject* get_game_object(GameObjectId id) const {
+            TGameObject* casted_object = dynamic_cast<TGameObject*>(this->get_game_object_internal(id));
+            assert(casted_object != nullptr);
+            return casted_object;
+        }
+
+        void unload_objects();
+
+        void load_objects();
+
         RV_API Component& get_component(ComponentId id);
 
     private:
@@ -52,6 +63,8 @@ namespace rv {
         RV_API ComponentId generate_component_id();
 
         RV_API void register_component(Component* component);
+
+        RV_API GameObject* get_game_object_internal(GameObjectId id) const;
 
     private:
 
@@ -64,6 +77,8 @@ namespace rv {
         GameObjectId next_game_object_id = 1;
 
         ComponentId next_component_id = 1;
+
+        bool objects_are_unloaded = false;
 
     };
 

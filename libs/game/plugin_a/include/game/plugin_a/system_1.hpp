@@ -2,6 +2,8 @@
 
 #include <river/plugin_system.hpp>
 #include <river/plugin_system_ref.hpp>
+#include <river/game_objects/fwd.hpp>
+#include <river/game_objects/game_object_context.hpp>
 
 #include <game/plugin_a/api.hpp>
 
@@ -42,6 +44,10 @@ namespace game::plugin_a {
 
         const rv::PluginSystemRef<plugin_b::System1> b_system_1;
         const rv::PluginSystemRef<plugin_b::System2> b_system_2;
+
+        rv::GameObjectContext game_object_context;
+
+        rv::GameObjectId test_object_id;
 
         int hello_count = 0;
         

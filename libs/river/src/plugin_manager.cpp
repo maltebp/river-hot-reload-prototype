@@ -10,6 +10,7 @@
 
 #include <river/plugin.hpp>
 #include <river/serialization.hpp>
+#include <river/game_objects/game_object_context.hpp>
 
 using namespace rv;
 
@@ -131,6 +132,10 @@ void PluginManager::reload_changed_plugins() {
 
     std::unordered_set<PluginInfo*> unloaded_plugins;    
     std::unordered_set<PluginSystemInfo*> unloaded_systems;
+
+    for( GameObjectContext* game_object_context : this->game_object_contexts ) {
+        game_object_context->unload_objects();
+    }
     
     for( auto [name, plugin_info] : this->plugin_infos ) {
     
@@ -160,8 +165,16 @@ void PluginManager::reload_changed_plugins() {
             system_info->serialized_system
         );
     }
+
+    for( GameObjectContext* game_object_context : this->game_object_contexts ) {
+        game_object_context->load_objects();
+    }
 }
 
+void PluginManager::register_game_object_context(GameObjectContext* context) {
+    //assert(std::find(this->game_object_contexts.begin(), this->game_object_contexts.end(), context) != game_object_contexts.end());
+    game_object_contexts.push_back(context);
+}
 
 PluginManager::PluginInfo* PluginManager::get_plugin_info(const std::string& dll_name) {
     auto it = this->plugin_infos.find(dll_name);

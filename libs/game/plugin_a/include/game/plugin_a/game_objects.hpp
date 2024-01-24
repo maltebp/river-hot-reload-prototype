@@ -57,6 +57,8 @@ namespace game::plugin_a {
 
         int modifiable_value = 0;
 
+        const int new_value = 1337;
+
     };
 
 }

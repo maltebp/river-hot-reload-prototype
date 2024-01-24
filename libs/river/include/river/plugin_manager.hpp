@@ -54,6 +54,8 @@ namespace rv {
 
         RV_API void reload_changed_plugins();
 
+        void register_game_object_context(GameObjectContext* context);
+
     private:
 
         class PluginInfo;
@@ -93,6 +95,8 @@ namespace rv {
         std::unordered_map<PluginSystemId, PluginSystemInfo*> plugin_system_infos;
 
         PluginSystemId next_system_id = 1;
+
+        std::vector<GameObjectContext*> game_object_contexts;
 
     };
 
